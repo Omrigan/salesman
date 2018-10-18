@@ -4,7 +4,7 @@ run: build
 runall: build
 	mkdir -p out
 	cat public/1.in | ./main > out/1.out
-	# cat public/2.in | ./main > out/2.out
+	cat public/2.in | ./main > out/2.out
 	cat public/3.in | ./main > out/3.out
 	cat public/4.in | ./main > out/4.out
 
@@ -12,8 +12,7 @@ build:
 	g++ -DDEBUG -O2 main.cpp -o main
 
 debug: 
-	g++ -O0 main.cpp -o main
-	cat public/2.in | gdb ./main > out/2.out
+	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null
 
 download:
 	mkdir -p public
