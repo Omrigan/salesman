@@ -3,10 +3,10 @@ run: build
 	cat public/1.in | ./main
 runall: build
 	mkdir -p out
-	time bash -c "cat public/1.in | ./main > out/1.out"
-	time bash -c "cat public/2.in | ./main > out/2.out"
-	time bash -c "cat public/3.in | ./main > out/3.out"
-	time bash -c "cat public/4.in | ./main > out/4.out"
+	cat public/1.in | ./main > out/1.out
+	cat public/2.in | ./main > out/2.out
+	cat public/3.in | ./main > out/3.out
+	cat public/4.in | ./main > out/4.out
 
 build:
 	g++ main.cpp -o main

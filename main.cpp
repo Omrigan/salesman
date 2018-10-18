@@ -5,24 +5,67 @@
 #include <vector>
 #include <iterator>
 #include <string>
+#include <chrono>
+#include <functional>
+
 using namespace std;
 
-struct Edge{
-    int f, t, d, c;
-};
-struct Vertex {
+using Clock = chrono::steady_clock;
+using Microseconds = chrono::microseconds;
+using Time = Clock::time_point;
+
+
+struct Edge;
+struct Airport {
     int idx, zone;
+    vector<Edge*> edges_from;
+};
+
+struct Edge{
+    Airport *from, *to;
+    int day, cost;
 };
 
 struct Assignment {
-    int N, start;
-    vector<Vertex> vertices;
+
+    Time start_time = Clock::now(), 
+    finish_time;
+    int kind = -1; // 0 - small, 1 - medium, 2 - large
+
+
+    int N;
+    Airport* start;
+    vector<Airport> airports;
     vector<Edge> edges; 
 
-    unordered_map<string, int> airport_to_idx;
+    unordered_map<string, int> airport_name_to_idx;
     vector<string> idx_to_airport;
 
     vector<string> zones;
+
+    
+
+    void init(){
+        for(int i = 0; i < edges.size(); ++i){
+            edges[i].from->edges_from.push_back(&edges[i]);
+        }
+
+
+        if(N<=20){
+            kind=1;
+            finish_time = start_time + std::chrono::milliseconds(2500);
+        } else if (N<=100){
+            kind=2;
+            finish_time = start_time + std::chrono::milliseconds(4500);
+        } else{
+            kind=3;
+            finish_time = start_time + std::chrono::milliseconds(14500);
+        }
+    }
+
+    bool ready_to_stop(){
+        return Clock::now()>finish_time;
+    }
 
 };
 
@@ -30,62 +73,100 @@ struct Assignment {
 
 struct Solution {
     Assignment* task;
-    vector<int> sequence;
+    vector<Edge*> sequence;
     int total_score = 0;
+    bool correct = false;
     void score(){
         total_score = 0;
-        for(int x : sequence){
-            total_score+=task->edges[x].c;
+        correct = sequence.size()==task->N;
+        for(Edge* x : sequence){
+            total_score+=x->cost;
         }
     }
     void print(){
-        score();
-        cout << total_score << endl;
-        for(int i = 0; i < sequence.size(); ++i){
-            Edge e = task->edges[sequence[i]];
-            cout << task->idx_to_airport[e.f] << " " << task->idx_to_airport[e.t] << " "
-            << i+1 << " " << e.c << endl;
+        if(correct){
+            cout << total_score << endl;
+            for(int i = 0; i < sequence.size(); ++i){
+                Edge* e = sequence[i];
+                cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
+                << i+1 << " " << e->cost << endl;
+            }
+        } else{
+            cout << ":(" << endl;
         }
+        
     }
 
 };
 
 Solution solve_simple(Assignment* task){
     Solution sol{.task = task};
-    int current_place = task->start;
-    int current_day = 1;
+    Airport* current_place = task->start;
     vector<bool> visited(task->N);
-    int visited_cnt = 1;
-    visited[task->vertices[current_place].zone] = true;
-    while(visited_cnt<task->N){
-        for(int i = 0; i < task->edges.size();++i){
+    visited[current_place->zone] = true;
+    for(int current_day = 1; current_day<=task->N; ++current_day){
+        int limit = current_place->edges_from.size(), 
+            offset = rand() % limit;
+        for(int i = 0; i < limit;++i){
             // cerr << current_place;
-            Edge e = task->edges[i];
-            if(e.f==current_place and !visited[task->vertices[e.t].zone] and (e.d==0 or e.d==current_day)){
-                sol.sequence.push_back(i);
-                current_place = e.t;
-                visited[task->vertices[current_place].zone] = true; 
+            int idx = (i+offset)%limit;
+            Edge* e = current_place->edges_from[idx];
+            if(!visited[e->to->zone] and (e->day==0 or e->day==current_day)){
+                sol.sequence.push_back(e);
+                current_place = e->to;
+                visited[current_place->zone] = true; 
                 break;
             }
         }
-        ++visited_cnt;
-        ++current_day;
     }
     for(int i = 0; i < task->edges.size();++i){
-        Edge e = task->edges[i];
-        if(e.f==current_place and e.t==task->start){
-            sol.sequence.push_back(i);
+        Edge* e = &task->edges[i];
+        if(e->from==current_place and e->to==task->start){
+            sol.sequence.push_back(e);
             break;
         }
     }
+    sol.score();
+   
 
     return sol;
 }
+Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int cnt){
+    Solution best = original(task);
+    for(int i = 1; i< cnt; ++i){
+        Solution temp = original(task);
+        temp.score();
+        if(temp.correct and temp.total_score < best.total_score){
+            cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
+            best = temp;
+        }
+    }
+    return best;
+}
+Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task){
+    Solution best = original(task);
+    while(true){
+        Solution temp = original(task);
+        temp.score();
+        if(temp.correct and temp.total_score < best.total_score){
+            cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
+            best = temp;
+        }
+        if(task->ready_to_stop()){
+            break;
+        }
+    }
+    return best;
+}
 
 int main() {
+
+    Assignment task;
+
+    srand(time(NULL));
+   
     cerr << "Starting" << endl;
     string start_airport_str, input;
-    Assignment task;
     cin >> task.N >> start_airport_str;
     getline(cin,input);
     // vector<vector<string>> airport_names;
@@ -97,29 +178,37 @@ int main() {
         istringstream iss(airports_raw);
         string item;
         while (getline(iss, item, ' ')) {
-            if(task.airport_to_idx.find(item)==task.airport_to_idx.end()){
-                task.airport_to_idx[item]=task.idx_to_airport.size();
+            if(task.airport_name_to_idx.find(item)==task.airport_name_to_idx.end()){
+                task.airport_name_to_idx[item]=task.idx_to_airport.size();
                 task.idx_to_airport.push_back(item);
             }     
-            task.vertices.push_back({task.vertices.size(), i});
+            task.airports.push_back({task.airports.size(), i});
         
         }
     }
     // cerr << task.zones[0] << endl;
-    cerr << "Vertices read" << endl;
-    task.start = task.airport_to_idx[start_airport_str];
+    cerr << "airports read" << endl;
+    task.start = &task.airports[task.airport_name_to_idx[start_airport_str]];
     while(!cin.eof()){
         string from, to;
         // cerr << from << to << endl;
-        int d, c;
-        cin >> from >> to >> d >> c;
+        int day, cost;
+        cin >> from >> to >> day >> cost;
         task.edges.push_back({
-            task.airport_to_idx[from],
-            task.airport_to_idx[to],
-            d,c}
+            &task.airports[task.airport_name_to_idx[from]],
+            &task.airports[task.airport_name_to_idx[to]],
+            day,cost}
         );
     }
-    Solution sol = solve_simple(&task);
+    task.init();
+
+    // Solution sol = solve_simple(&task);
+    Solution sol = run_cnt(solve_simple,&task, 10);
+     if(!sol.correct){
+        cerr << "SOLUTION INCORRECT!" << endl;
+    }
+    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+
     sol.print();
 	return 0;
 }
