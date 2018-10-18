@@ -4,7 +4,7 @@ run: build
 runall: build
 	mkdir -p out
 	cat public/1.in | ./main > out/1.out
-	# cat public/2.in | ./main > out/2.out
+	cat public/2.in | ./main > out/2.out
 	cat public/3.in | ./main > out/3.out
 	cat public/4.in | ./main > out/4.out
 
