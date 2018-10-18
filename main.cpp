@@ -53,13 +53,13 @@ struct Assignment {
 
         if(N<=20){
             kind=1;
-            finish_time = start_time + std::chrono::milliseconds(2500);
+            finish_time = start_time + std::chrono::milliseconds(2700);
         } else if (N<=100){
             kind=2;
-            finish_time = start_time + std::chrono::milliseconds(4500);
+            finish_time = start_time + std::chrono::milliseconds(4700);
         } else{
             kind=3;
-            finish_time = start_time + std::chrono::milliseconds(14500);
+            finish_time = start_time + std::chrono::milliseconds(14700);
         }
     }
 
@@ -144,6 +144,9 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
             cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
             best = temp;
         }
+        #ifdef DEBUG
+            break;
+        #endif
         if(task->ready_to_stop()){
             break;
         }
@@ -196,7 +199,7 @@ int main() {
     cerr << "Assignment initialised" << endl;
 
     // Solution sol = solve_simple(&task);
-    Solution sol = run_cnt(solve_simple,&task, 10);
+    Solution sol = run_until_tl(solve_simple,&task);
      if(!sol.correct){
         cerr << "SOLUTION INCORRECT!" << endl;
     }
