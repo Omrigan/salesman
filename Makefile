@@ -9,7 +9,12 @@ runall: build
 	cat public/4.in | ./main > out/4.out
 
 build:
-	g++ main.cpp -o main
+	g++ -O2 main.cpp -o main
+
+debug: 
+	g++ -O0 main.cpp -o main
+	cat public/2.in | gdb ./main > out/2.out
+
 download:
 	mkdir -p public
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/1.in -O public/1.in

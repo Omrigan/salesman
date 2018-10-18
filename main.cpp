@@ -84,16 +84,13 @@ struct Solution {
         }
     }
     void print(){
-        if(correct){
-            cout << total_score << endl;
-            for(int i = 0; i < sequence.size(); ++i){
-                Edge* e = sequence[i];
-                cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
-                << i+1 << " " << e->cost << endl;
-            }
-        } else{
-            cout << ":(" << endl;
+        cout << total_score << endl;
+        for(int i = 0; i < sequence.size(); ++i){
+            Edge* e = sequence[i];
+            cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
+            << i+1 << " " << e->cost << endl;
         }
+        
         
     }
 
@@ -104,31 +101,26 @@ Solution solve_simple(Assignment* task){
     Airport* current_place = task->start;
     vector<bool> visited(task->N);
     visited[current_place->zone] = true;
-    for(int current_day = 1; current_day<=task->N; ++current_day){
+    for(int current_day = 0; current_day<task->N; ++current_day){
         int limit = current_place->edges_from.size(), 
             offset = rand() % limit;
+        if(current_day==task->N-1)
+        {
+            visited[task->start->zone] = false;
+        }
         for(int i = 0; i < limit;++i){
-            // cerr << current_place;
             int idx = (i+offset)%limit;
             Edge* e = current_place->edges_from[idx];
-            if(!visited[e->to->zone] and (e->day==0 or e->day==current_day)){
+            if(!visited[e->to->zone] and (e->day==-1 or e->day==current_day)){
                 sol.sequence.push_back(e);
                 current_place = e->to;
                 visited[current_place->zone] = true; 
                 break;
             }
         }
-    }
-    for(int i = 0; i < task->edges.size();++i){
-        Edge* e = &task->edges[i];
-        if(e->from==current_place and e->to==task->start){
-            sol.sequence.push_back(e);
-            break;
-        }
+
     }
     sol.score();
-   
-
     return sol;
 }
 Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int cnt){
@@ -187,7 +179,7 @@ int main() {
         }
     }
     // cerr << task.zones[0] << endl;
-    cerr << "airports read" << endl;
+    cerr << "Airports read" << endl;
     task.start = &task.airports[task.airport_name_to_idx[start_airport_str]];
     while(!cin.eof()){
         string from, to;
@@ -197,10 +189,11 @@ int main() {
         task.edges.push_back({
             &task.airports[task.airport_name_to_idx[from]],
             &task.airports[task.airport_name_to_idx[to]],
-            day,cost}
+            day-1,cost}
         );
     }
     task.init();
+    cerr << "Assignment initialised" << endl;
 
     // Solution sol = solve_simple(&task);
     Solution sol = run_cnt(solve_simple,&task, 10);
@@ -208,7 +201,7 @@ int main() {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
     cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
-
+    sol.score();
     sol.print();
 	return 0;
 }
