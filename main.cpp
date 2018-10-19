@@ -14,7 +14,6 @@ using namespace std;
 
 // TODO: unify variables namestyle
 // TODO: use better random
-// TODO: apply const qualifiers when necessary
 
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
@@ -77,12 +76,6 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
             else cerr << "Solution found!" << endl;
             best = move(temp);
         }
-        // please remove this >_<
-        /*
-        #ifdef DEBUG
-            break;
-        #endif
-        */
         if(task->ready_to_stop()) {
             break;
         }
@@ -93,16 +86,22 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
 Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, Assignment* task) {
     int max_cost = max_element(task->edges.begin(), task->edges.end())->cost;
     // this should be modified
-    int min_cost = max_cost / 2;
+    int min_cost = 0;
+
+    Solution best_solution;
 
     while (min_cost + 1 < max_cost) {
         int med_cost = (min_cost + max_cost) / 2;
         task->max_edge_cost = med_cost;
         bool success = false;
         for (int i = 0; i < MAX_ATTEMPT; ++i) {
-            Solution solution = original(task);
-            solution.score();
-            if (solution.correct) {
+            Solution tmp_solution = original(task);
+            tmp_solution.score();
+            if (tmp_solution.correct) {
+                if (!best_solution.correct or
+                    (best_solution.total_score > tmp_solution.total_score)) {
+                    best_solution = move(tmp_solution);
+                }
                 success = true;
                 break;
             }
@@ -117,7 +116,14 @@ Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, As
 
     task->max_edge_cost = max_cost;
 
-    return run_until_tl(original, task);
+    Solution tmp_solution = run_until_tl(original, task);
+    if (tmp_solution.correct and
+        (!best_solution.correct or
+        (best_solution.total_score > tmp_solution.total_score))) {
+        best_solution = move(tmp_solution);
+    }
+
+    return best_solution;
 }
 
 int main() {
