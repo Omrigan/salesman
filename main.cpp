@@ -54,8 +54,6 @@ Solution solve_simple(Assignment* task) {
     return sol;
 }
 
-
-
 Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int cnt) {
     Solution best = original(task);
     for(int i = 1; i < cnt; ++i) {
@@ -90,6 +88,36 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
         }
     }
     return best;
+}
+
+Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, Assignment* task) {
+    int max_cost = max_element(task->edges.begin(), task->edges.end())->cost;
+    // this should be modified
+    int min_cost = max_cost / 2;
+
+    while (min_cost + 1 < max_cost) {
+        int med_cost = (min_cost + max_cost) / 2;
+        task->max_edge_cost = med_cost;
+        bool success = false;
+        for (int i = 0; i < MAX_ATTEMPT; ++i) {
+            Solution solution = original(task);
+            solution.score();
+            if (solution.correct) {
+                success = true;
+                break;
+            }
+        }
+
+        if (success) {
+            max_cost = med_cost;
+        } else {
+            min_cost = med_cost;
+        }
+    }
+
+    task->max_edge_cost = max_cost;
+
+    return run_until_tl(original, task);
 }
 
 int main() {
@@ -145,7 +173,7 @@ int main() {
     cerr << "Assignment initialised" << endl;
 
     // Solution sol = solve_simple(&task);
-    Solution sol = run_until_tl(dynamic_zone_order_dp, &task);
+    Solution sol = run_binary_search_on_edges(dynamic_zone_order_dp, &task);
      if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
