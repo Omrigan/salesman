@@ -1,0 +1,101 @@
+#include <algorithm>
+#include <assert.h>
+#include <chrono>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+
+using namespace std;
+
+using Clock = chrono::steady_clock;
+using Microseconds = chrono::microseconds;
+using Time = Clock::time_point;
+
+#ifndef BASIC_STRUCTS
+#define BASIC_STRUCTS 1
+
+static constexpr int MAX_AIRPORT = 300 + 12;
+static constexpr int RESHUFFLE_ATTEMPTS = 112;
+
+struct Edge;
+
+struct Airport {
+    int idx, zone;
+    int local_idx;
+    vector<Edge*> edges_from;
+};
+
+struct Edge {
+    Airport* from;
+    Airport* to;
+    int day, cost;
+};
+
+struct Assignment {
+    Time start_time = Clock::now(), 
+    finish_time;
+    int kind = -1; // 0 - small, 1 - medium, 2 - large
+    int N;
+    Airport* start;
+    vector<Airport> airports;
+    vector<Edge> edges; 
+    unordered_map<string, int> airport_name_to_idx;
+    vector<string> idx_to_airport;
+    vector<string> zones;
+    vector<vector<Airport*>> zone_airports;
+
+    void init() {
+        for (int i = 0; i < edges.size(); ++i) {
+            edges[i].from->edges_from.push_back(&edges[i]);
+        }
+
+        if (N <= 20) { 
+            kind = 1;
+            finish_time = start_time + std::chrono::milliseconds(2700);
+        } else if (N <= 100) {
+            kind = 2;
+            finish_time = start_time + std::chrono::milliseconds(4700);
+        } else {
+            kind = 3;
+            finish_time = start_time + std::chrono::milliseconds(14700);
+        }
+    }
+
+    bool ready_to_stop() {
+        return Clock::now() > finish_time;
+    }
+};
+
+struct Solution {
+    const Assignment* task;
+    vector<const Edge*> sequence;
+    int total_score = 0;
+    bool correct = false;
+
+    void score() {
+        total_score = 0;
+        if (task != nullptr) {
+            correct = sequence.size() == task->N;
+            for(const Edge* x : sequence) {
+                total_score += x->cost;
+            }
+        }
+    }
+
+    void print() {
+        cout << total_score << endl;
+        for(int i = 0; i < sequence.size(); ++i) {
+            const Edge* e = sequence[i];
+            cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
+                 << i + 1 << " " << e->cost << endl;
+        }
+    }
+
+};
+#endif
