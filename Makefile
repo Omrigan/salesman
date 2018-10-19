@@ -20,3 +20,7 @@ download:
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/2.in -O public/2.in
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/3.in -O public/3.in
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/4.in -O public/4.in
+
+submit:
+	cat basic_structs.cpp dp.cpp main.cpp | grep -v nosubmit > submit.cpp 
+	cat submit.cpp | xsel -b 
