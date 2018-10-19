@@ -12,8 +12,7 @@ build:
 	g++ -DDEBUG -O2 main.cpp -o main
 
 debug: 
-	g++ -O0 main.cpp -o main
-	cat public/2.in | gdb ./main > out/2.out
+	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null
 
 download:
 	mkdir -p public
