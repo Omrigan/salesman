@@ -1,15 +1,15 @@
 #include <algorithm>
+#include <assert.h>
 #include <chrono>
 #include <functional>
 #include <iostream>
 #include <iterator>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-
-// TODO: REMOVE
 using namespace std;
 
 // TODO: unify variables namestyle
@@ -236,6 +236,84 @@ Solution fixed_zone_order_dp(const Assignment* task) {
     }
 }
 
+int get_best_available_zone(const Assignment* task,
+                            const vector<int>& cur_distances,
+                            const set<int>& visited_zones,
+                            int prev_zone,
+                            int day) {
+    if (day == task->N - 1) {
+        return task->start->zone;
+    } else {
+        set<int> new_available_zones;
+
+        for (int prev_airport = 0; prev_airport < task->zone_airports[prev_zone].size(); ++prev_airport) {
+            if (cur_distances[prev_airport] != -1) {
+                for (const Edge* edge : task->zone_airports[prev_zone][prev_airport]->edges_from) {
+                    if ((edge->day == day or edge->day == -1) and
+                         edge->to->zone != task->start->zone and
+                         !visited_zones.count(edge->to->zone)) {
+                        assert(edge->from->local_idx == prev_airport);
+                        new_available_zones.insert(edge->to->zone);
+                    }
+                }
+            }
+        }
+
+        if (new_available_zones.empty()) {
+            return -1;
+        } else {
+            // rewrite this >_<
+            int zone_ind = random() % new_available_zones.size();
+            auto zone_it = new_available_zones.begin();
+            while (zone_ind) {
+                ++zone_it;
+                --zone_ind;
+            }
+            return *zone_it;
+        }
+    }
+}
+
+Solution dynamic_zone_order_dp(const Assignment* task) {
+    int max_zone_size = max_size(task->zone_airports);
+    
+    // if an airport is unreachable, then 
+    // the corresponding best_distance value is -1 
+    vector<vector<int>> best_distance(2, vector<int>(max_zone_size, -1));
+    best_distance[0][task->start->local_idx] = 0;
+
+    // days are enumerate from 0
+    // just like the edge's days
+    vector<vector<const Edge*>> dp_restore(task->N, vector<const Edge*>(max_zone_size, nullptr));
+
+    set<int> visited_zones;
+    int prev_zone = task->start->zone;
+    for (int day = 0; day < task->N; ++day) {
+        best_distance[1].assign(best_distance[1].size(), -1);
+
+        int zone = get_best_available_zone(task, best_distance[0], visited_zones, prev_zone, day);
+
+        if (zone == -1) {
+            return Solution();
+        }
+
+        bool made_relaxation = false;
+
+        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, made_relaxation);
+
+        if (!made_relaxation) {
+            return Solution();
+        }
+
+        visited_zones.insert(zone);
+        prev_zone = zone;
+
+        swap(best_distance[0], best_distance[1]);
+    }
+
+    return dp_construct_solution_from(task, dp_restore);
+}
+
 Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int cnt) {
     Solution best = original(task);
     for(int i = 1; i < cnt; ++i) {
@@ -325,7 +403,7 @@ int main() {
     cerr << "Assignment initialised" << endl;
 
     // Solution sol = solve_simple(&task);
-    Solution sol = run_until_tl(fixed_zone_order_dp, &task);
+    Solution sol = run_until_tl(dynamic_zone_order_dp, &task);
      if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
