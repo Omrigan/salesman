@@ -14,6 +14,7 @@ using namespace std;
 
 // TODO: unify variables namestyle
 // TODO: use better random
+// TODO: apply const qualifiers when necessary
 
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
@@ -159,14 +160,39 @@ Solution dp_construct_solution_from(const Assignment* task, const vector<vector<
     return solution;
 }
 
+// for debug purposes only
 static int max_day = 0;
+
+void recalc_dp(const Assignment* task, 
+               vector<vector<int>>& best_distance,
+               vector<vector<const Edge*>>& dp_restore, 
+               const int prev_zone,
+               const int zone,
+               const int day,
+               bool& made_relaxation) {
+    for (int airport_idx = 0; airport_idx < task->zone_airports[prev_zone].size(); ++airport_idx) {
+        if (best_distance[0][airport_idx] != -1) {
+            const Airport* prev_airport = task->zone_airports[prev_zone][airport_idx];
+            for (const Edge* edge : prev_airport->edges_from) {
+                if ((edge->day == day or edge->day == -1) and
+                    edge->to->zone == zone and
+                    (best_distance[1][edge->to->local_idx] == -1 or
+                    best_distance[1][edge->to->local_idx] > best_distance[0][edge->from->local_idx] + edge->cost)) {
+                    best_distance[1][edge->to->local_idx] = best_distance[0][edge->from->local_idx] + edge->cost;
+                    dp_restore[day][edge->to->local_idx] = edge;
+                    made_relaxation = true;
+                }
+            }
+        }
+    }
+}
 
 Solution fixed_zone_order_dp(const Assignment* task) {
     vector<int> zone_order = get_zone_order(task);
 
     int max_zone_size = max_size(task->zone_airports);
 
-    // if an airport in unreachable, then 
+    // if an airport is unreachable, then 
     // the corresponding best_distance value is -1 
     vector<vector<int>> best_distance(2, vector<int>(max_zone_size, -1));
     best_distance[0][task->start->local_idx] = 0;
@@ -185,21 +211,7 @@ Solution fixed_zone_order_dp(const Assignment* task) {
 
         bool made_relaxation = false;
 
-        for (int airport_idx = 0; airport_idx < task->zone_airports[prev_zone].size(); ++airport_idx) {
-            if (best_distance[0][airport_idx] != -1) {
-                const Airport* prev_airport = task->zone_airports[prev_zone][airport_idx];
-                for (const Edge* edge : prev_airport->edges_from) {
-                    if ((edge->day == day or edge->day == -1) and
-                        edge->to->zone == zone and
-                        (best_distance[1][edge->to->local_idx] == -1 or
-                        best_distance[1][edge->to->local_idx] > best_distance[0][edge->from->local_idx] + edge->cost)) {
-                        best_distance[1][edge->to->local_idx] = best_distance[0][edge->from->local_idx] + edge->cost;
-                        dp_restore[day][edge->to->local_idx] = edge;
-                        made_relaxation = true;
-                    }
-                }
-            }
-        }
+        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, made_relaxation);
 
         if (!made_relaxation) {
             --reshuffle_attempts;
@@ -244,6 +256,7 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
         temp.score();
         if(temp.correct and (!best.correct or temp.total_score < best.total_score)) {
             if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
+            else cerr << "Solution found!" << endl;
             best = move(temp);
         }
         // please remove this >_<
