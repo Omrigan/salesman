@@ -90,8 +90,6 @@ struct Solution {
             cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
             << i+1 << " " << e->cost << endl;
         }
-        
-        
     }
 
 };
