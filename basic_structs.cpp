@@ -23,7 +23,7 @@ using Time = Clock::time_point;
 static constexpr int MAX_AIRPORT = 300 + 12;
 static constexpr int RESHUFFLE_ATTEMPTS = 112;
 static constexpr int MAX_ATTEMPT_EDGES_COST = 112;
-static constexpr int MAX_ATTEMPT_EDGES_CNT = 11 2;
+static constexpr int MAX_ATTEMPT_EDGES_CNT = 112;
 
 struct Edge;
 
