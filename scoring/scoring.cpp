@@ -145,5 +145,6 @@ int main(int argc, char* argv[]) {
     system(("git commit -m \"" + run_name + " scored\" ").c_str());
 	
     
+    system("git push");
     return 0;
 }
