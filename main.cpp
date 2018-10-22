@@ -163,6 +163,16 @@ Solution solve(Assignment *task, Solution & sol) {
     sol.score();
     return sol;
 }
+Solution do_final_solve(Assignment* task){
+    Solution sol = run_until_correct(solve_simple,task);
+    sol.score();
+    cerr << "SIMPLE SCORE " << sol.total_score << '\n';
+    if(!sol.correct) {
+        cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
+    }
+    sol = solve(task, sol);
+    return sol;
+}
 
 int main() {
     Assignment task;
