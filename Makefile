@@ -12,6 +12,9 @@ runall: build
 build:
 	g++ -DDEBUG -pthread -O2 main.cpp -o main 
 
+build-scoring:
+	g++ -O2 scoring/scoring.cpp -o score
+
 debug: 
 	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread
 
@@ -25,3 +28,6 @@ download:
 submit:
 	cat basic_structs.cpp run.cpp dp.cpp greedy.cpp main.cpp | grep -v nosubmit > submit.cpp 
 	cat submit.cpp | xsel -b 
+
+baseline: build-scoring
+	./score make-baseline current
