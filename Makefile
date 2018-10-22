@@ -1,6 +1,7 @@
 run: build
 	cat sample.in | ./main
 	cat public/1.in | ./main
+
 runall: build
 	mkdir -p out
 	cat public/1.in | ./main > out/1.out
@@ -13,7 +14,6 @@ build:
 
 debug: 
 	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread
-	cat sample.in | ./main
 
 download:
 	mkdir -p public
@@ -23,5 +23,5 @@ download:
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/4.in -O public/4.in
 
 submit:
-	cat basic_structs.cpp dp.cpp main.cpp | grep -v nosubmit > submit.cpp 
+	cat basic_structs.cpp dp.cpp greedy.cpp main.cpp | grep -v nosubmit > submit.cpp 
 	cat submit.cpp | xsel -b 

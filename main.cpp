@@ -25,6 +25,7 @@ using Time = Clock::time_point;
 
 #include "basic_structs.cpp" // nosubmit
 #include "dp.cpp" //nosubmit
+#include "greedy.cpp" //nosubmit
 
 Solution solve_simple(Assignment* task) {
     Solution sol{ .task = task };
@@ -271,12 +272,10 @@ int main() {
         }
     }
 
-    // cerr << task.zones[0] << endl;
     cerr << "Airports read" << endl;
     task.start = &task.airports[task.airport_name_to_idx[start_airport_str]];
     while(!cin.eof()) {
         string from, to;
-        // cerr << from << to << endl;
         int day, cost;
         cin >> from >> to >> day >> cost;
         task.edges.push_back({
@@ -288,6 +287,8 @@ int main() {
     }
 
     task.init();
+
+    /*
     cerr << "Assignment initialised" << endl;
     Solution sol = solve_simple(&task);
     sol.score();
@@ -301,8 +302,13 @@ int main() {
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
-    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+    */
+    Solution sol = run_until_tl(greedy, &task);
     sol.score();
+    if(!sol.correct) {
+        cerr << "SOLUTION INCORRECT!" << endl;
+    }
+    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
     cerr << "Score: " << sol.total_score << endl;
     cerr << "Max day reached: " << max_day << endl;
     sol.print();
