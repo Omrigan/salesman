@@ -23,8 +23,8 @@ using namespace std;
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;
-vector<string> tests = {"1.in"};
-string test_folder = "public";
+vector<string> tests = {"public1.in", "public3.in"};
+string test_folder = "tests";
 
 using statistics = map<string, map<string,double>>;
 
@@ -79,8 +79,10 @@ void rebuild_report(statistics* stats, string baseline_name){
     ofstream file;
     if(baseline_name.size()>0){
         file.open("scoring/"+baseline_name+".md");
+        file << "# Scoring against " << baseline_name << endl << endl; 
     } else{
         file.open("README.md");
+        file << "# Global scores " << baseline_name << endl << endl;
     }
     file << "| "; 
     for(auto& test : stats->begin()->second)
@@ -119,6 +121,7 @@ void rebuild_report(statistics* stats, string baseline_name){
 }
 
 int main(int argc, char* argv[]) {
+    
 
     statistics stats = load_statistics();
 
@@ -128,6 +131,7 @@ int main(int argc, char* argv[]) {
     
     string run_name = argv[1];
     if(run_name!="skip"){
+        system("make build");
         score(&stats, run_name);    
     }
     

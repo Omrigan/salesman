@@ -30,4 +30,4 @@ submit:
 	cat submit.cpp | xsel -b 
 
 score: build-scoring
-	./score current
+	./score test 
