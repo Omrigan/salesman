@@ -164,7 +164,7 @@ Solution solve(Assignment *task, Solution & sol) {
     return sol;
 }
 Solution do_final_solve(Assignment* task){
-    Solution sol = run_until_correct(solve_simple,task);
+    Solution sol = edges_number_binary_search(greedy, task);
     sol.score();
     cerr << "SIMPLE SCORE " << sol.total_score << '\n';
     if(!sol.correct) {

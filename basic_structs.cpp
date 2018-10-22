@@ -22,7 +22,8 @@ using Time = Clock::time_point;
 
 static constexpr int MAX_AIRPORT = 300 + 12;
 static constexpr int RESHUFFLE_ATTEMPTS = 112;
-static constexpr int MAX_ATTEMPT = 112;
+static constexpr int MAX_ATTEMPT_EDGES_COST = 112;
+static constexpr int MAX_ATTEMPT_EDGES_CNT = 11 2;
 
 struct Edge;
 
@@ -56,6 +57,7 @@ struct Assignment {
     vector<string> zones;
     vector<vector<Airport*>> zone_airports;
     int max_edge_cost = -1;
+    int max_edge_index = 22;
 
     void init() {
         for (Airport& airport : airports) {
