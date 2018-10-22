@@ -9,10 +9,11 @@ runall: build
 	cat public/4.in | ./main > out/4.out
 
 build:
-	g++ -DDEBUG -O2 main.cpp -o main
+	g++ -DDEBUG -pthread -O2 main.cpp -o main 
 
 debug: 
-	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null
+	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread
+	cat sample.in | ./main
 
 download:
 	mkdir -p public

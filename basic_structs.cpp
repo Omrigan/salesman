@@ -63,7 +63,7 @@ struct Assignment {
             finish_time = start_time + std::chrono::milliseconds(4700);
         } else {
             kind = 3;
-            finish_time = start_time + std::chrono::milliseconds(14700);
+            finish_time = start_time + std::chrono::milliseconds(14000);
         }
     }
 
