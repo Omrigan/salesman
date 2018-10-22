@@ -32,18 +32,17 @@ Solution solve_simple(Assignment* task) {
     Airport* current_place = task->start;
     std::vector<bool> visited(task->N);
     visited[current_place->zone] = true;
-    for(int current_day = 1; current_day<= task->N; ++current_day){
+    for (int current_day = 1; current_day<= task->N; ++current_day) {
         int limit = current_place->edges_from.size();
-        if(limit!=0){
-           
+        if(limit!=0) {
             int offset = rand() % limit;
-            if(current_day == task->N) {
+            if (current_day == task->N) {
                 visited[task->start->zone] = false;
             }
-            for(int i = 0; i < limit; ++i){
+            for (int i = 0; i < limit; ++i) {
                 int idx = (i + offset) % limit;
                 Edge* e = current_place->edges_from[idx];
-                if(!visited[e->to->zone] and (e->day == 0 or e->day == current_day)){
+                if (!visited[e->to->zone] and (e->day == 0 or e->day == current_day)) {
                     sol.sequence.push_back(e);
                     current_place = e->to;
                     visited[current_place->zone] = true;

@@ -1,6 +1,6 @@
 #include "basic_structs.cpp" //nosubmit
 
-static constexpr int MAX_EDGE_IND = 20;
+static constexpr int MAX_EDGE_IND = 12;
 
 // returns false iff there is no more suitable edges
 bool iterate_to_next_edge(const vector<bool>& visited, const vector<const Edge*>& edges, int& ind) {
@@ -32,6 +32,7 @@ int get_suitable_edges(const vector<bool>& visited, const Airport* airport, int 
     return suitable_edges_cnt;
 }
 
+// really nasty
 Edge const* get_suitable_edge(const vector<bool>& visited, const Airport* airport, int day, int ind) {
     int cur_ind_day = -1;
     int cur_ind_zero = -1;
@@ -50,6 +51,7 @@ Edge const* get_suitable_edge(const vector<bool>& visited, const Airport* airpor
             iterate_to_next_edge(visited, airport->edges_from_by_day[0], cur_ind_zero);
         } else {
             if (cur_ind_zero >= airport->edges_from_by_day[0].size()) {
+                assert(cur_ind_day < airport->edges_from_by_day[day].size());
                 cur_edge = airport->edges_from_by_day[day][cur_ind_day];
                 iterate_to_next_edge(visited, airport->edges_from_by_day[day], cur_ind_day);
             } else {
