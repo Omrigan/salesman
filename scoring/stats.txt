@@ -7,7 +7,3 @@ solve_simple 2
 public1.in 6666
 public3.in 93414
 
-test 2
-public1.in 6666
-public3.in 6666
-

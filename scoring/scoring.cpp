@@ -72,7 +72,7 @@ void score(statistics* stats, string name){
         string cmd = "cat " + test_folder + "/" + test_name + " | ./main > test.out";
         if(system(cmd.c_str())!=0){
             cerr << "your solution failed. Your scores so far:" << endl;
-             for(auto& test : (*stats)[test_name]){
+             for(auto& test : (*stats)[name]){
                 cerr << test.first << " " << test.second << endl;
              }
             exit(228);
