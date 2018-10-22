@@ -63,6 +63,10 @@ statistics  load_statistics(){
 
 
 void score(statistics* stats, string name){
+    if(stats->find(name)!=stats->end()){
+        cerr << name << " exists" << endl;
+        exit(1);
+    }
     
     for(auto& test_name : tests){
         string cmd = "cat " + test_folder + "/" + test_name + " | ./main > test.out";
