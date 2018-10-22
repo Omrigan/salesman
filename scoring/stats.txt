@@ -1,9 +1,5 @@
-2
-current 1
-1.in 4847
-
-local_search 3
+1
+local_search 2
 public1.in 1396
-public2.in 1396
 public3.in 60899
 

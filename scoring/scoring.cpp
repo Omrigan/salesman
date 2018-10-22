@@ -85,14 +85,14 @@ void rebuild_report(statistics* stats, string baseline_name){
         file << "# Global scores " << baseline_name << endl << endl;
     }
     file << "| "; 
-    for(auto& test : stats->begin()->second)
+    for(auto& test : tests)
     {
-        file << "| " << test.first << " ";
+        file << "| " << test << " ";
     }
     file << "|" << endl;
     
     file << "| --- ";
-    for(auto& test : stats->begin()->second)
+    for(auto& test : tests)
     {
         file << "| --- ";
     }
