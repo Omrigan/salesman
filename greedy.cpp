@@ -101,7 +101,7 @@ Solution greedy(const Assignment* task) {
     const Edge * next_edge = nullptr;
     for (const Edge* edge : cur_airport->edges_from) {
         if ((edge->day == 0 or edge->day == task->N) and
-            edge->to == task->start) {
+            edge->to->zone == task->start->zone) {
             if (next_edge == nullptr or next_edge->cost > edge->cost) {
                 next_edge = edge;
             }
