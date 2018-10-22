@@ -29,5 +29,5 @@ submit:
 	cat basic_structs.cpp run.cpp dp.cpp greedy.cpp main.cpp | grep -v nosubmit > submit.cpp 
 	cat submit.cpp | xsel -b 
 
-baseline: build-scoring
-	./score make-baseline current
+score: build-scoring
+	./score current
