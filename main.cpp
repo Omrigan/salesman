@@ -60,7 +60,7 @@ Solution solve_simple(Assignment* task) {
 Solution solve(Assignment *task, Solution & sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize
-    const int MAX_ITER_INNER = 100000;
+    const int MAX_ITER_INNER = 1000;
     const int MAX_ITER_OUTER = 10000000;
     long long COST_INF = 10000000000;
     const int MAX_TIME = 300;
@@ -77,9 +77,11 @@ Solution solve(Assignment *task, Solution & sol) {
         }
         canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
     }
+    auto basic_seq = sol.sequence;
     auto global_best_sequence = sol.sequence;
     long long global_best_score = COST_INF;
     for (int j = 0; j < MAX_ITER_OUTER && !task->ready_to_stop(); j++) {
+        sol.sequence = basic_seq;
         for (int i = 0; i < MAX_ITER_INNER && !task->ready_to_stop(); i++) {
             //  выбираем пару объектов в цепочке
             int max_edge_id = sol.sequence.size(); // видимо первый не трогаем, а последний обрабатываем отдельно
