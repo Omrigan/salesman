@@ -68,7 +68,8 @@ void recalc_dp(const Assignment* task,
         if (best_distance[0][airport_idx] != -1) {
             const Airport* prev_airport = task->zone_airports[prev_zone][airport_idx];
             for (const Edge* edge : prev_airport->edges_from) {
-                if ((edge->day == day or edge->day == -1) and
+                if ((task->max_edge_cost == -1 or edge->cost < task->max_edge_cost) and
+                    (edge->day == day or edge->day == -1) and
                     edge->to->zone == zone and
                     (best_distance[1][edge->to->local_idx] == -1 or
                     best_distance[1][edge->to->local_idx] > best_distance[0][edge->from->local_idx] + edge->cost)) {
@@ -143,7 +144,8 @@ int get_best_available_zone(const Assignment* task,
         for (int prev_airport = 0; prev_airport < task->zone_airports[prev_zone].size(); ++prev_airport) {
             if (cur_distances[prev_airport] != -1) {
                 for (const Edge* edge : task->zone_airports[prev_zone][prev_airport]->edges_from) {
-                    if ((edge->day == day or edge->day == -1) and
+                    if ((task->max_edge_cost == -1 or edge->cost <= task->max_edge_cost) and
+                        (edge->day == day or edge->day == -1) and
                          edge->to->zone != task->start->zone and
                          !visited_zones.count(edge->to->zone)) {
                         assert(edge->from->local_idx == prev_airport);
