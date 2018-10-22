@@ -31,6 +31,7 @@ struct Airport {
     int idx, zone;
     int local_idx;
     vector<Edge*> edges_from;
+    vector<vector<const Edge*>> edges_from_by_day;
 };
 
 struct Edge {
@@ -59,8 +60,21 @@ struct Assignment {
     int max_edge_index = 22;
 
     void init() {
+        for (Airport& airport : airports) {	
+            airport.edges_from_by_day.resize(N + 1);	
+        }
+
         for (int i = 0; i < edges.size(); ++i) {
             edges[i].from->edges_from.push_back(&edges[i]);
+            edges[i].from->edges_from_by_day[edges[i].day].push_back(&edges[i]);
+        }
+
+        for (Airport& airport : airports) {	
+            for (vector<const Edge*>& edges : airport.edges_from_by_day) {	
+                sort(edges.begin(), edges.end(), [](const Edge* a, const Edge* b) {	
+                    return a->cost < b->cost;	
+                });	
+            }	
         }
 
         if (N <= 20) { 
