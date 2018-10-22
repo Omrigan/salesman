@@ -65,6 +65,7 @@ Solution do_final_solve(Assignment* task){
         cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
     }
     // sol = solve_local_search(task, sol);
+    asd
     sol = run_until_tl(solve_simple, task);
     return sol;
 }

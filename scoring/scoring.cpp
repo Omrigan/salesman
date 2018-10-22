@@ -135,7 +135,9 @@ int main(int argc, char* argv[]) {
     
     string run_name = argv[1];
     if(run_name!="skip"){
-        system("make build");
+        if(system("make build")!=0){
+            exit(228);
+        }
         score(&stats, run_name);    
     }
     
