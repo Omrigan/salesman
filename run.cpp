@@ -58,7 +58,7 @@ Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, As
         int med_cost = (min_cost + max_cost) / 2;
         task->max_edge_cost = med_cost;
         bool success = false;
-        for (int i = 0; i < MAX_ATTEMPT; ++i) {
+        for (int i = 0; i < MAX_ATTEMPT_EDGES_COST; ++i) {
             Solution tmp_solution = original(task);
             tmp_solution.score();
             if (tmp_solution.correct) {
@@ -89,3 +89,46 @@ Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, As
 
     return best_solution;
 }
+
+int get_max_edges_cnt(const Assignment* task) {
+    int ret = 0;
+    for (const Airport& airport : task->airports) {
+        for (int day = 1; day <= task->N; ++day) {
+            ret = max(ret, static_cast<int>(airport.edges_from_by_day[day].size() + airport.edges_from_by_day[0].size()));
+        }
+    }
+    return ret;
+}
+
+// call this only with "greedy" function
+Solution edges_number_binary_search(function<Solution(Assignment*)> original, Assignment* task) {
+    int min_edges_cnt = 0;
+    int max_edges_cnt = get_max_edges_cnt(task);
+
+    while (min_edges_cnt + 1 < max_edges_cnt) {
+        int med_edges_cnt = (min_edges_cnt + max_edges_cnt) / 2;
+        bool success = false;
+        for (int i = 0; i < MAX_ATTEMPT_EDGES_CNT; ++i) {
+            task->max_edge_index = med_edges_cnt;
+            Solution sol = original(task);
+            if (sol.correct) {
+                success = true;
+                break;
+            }
+        }
+        if (success) {
+            max_edges_cnt = med_edges_cnt;
+        } else {
+            min_edges_cnt = med_edges_cnt;
+        }
+    }
+
+    max_edges_cnt += 2;
+    task->max_edge_index = max_edges_cnt;
+
+    cerr << "Maximum edge index: " << task->max_edge_index + 2 << endl;
+    cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
+
+    return run_until_tl(original, task);
+}
+

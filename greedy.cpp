@@ -1,6 +1,6 @@
 #include "basic_structs.cpp" //nosubmit
 
-static constexpr int MAX_EDGE_IND = 12;
+static constexpr int RETRY_NUMBER = 20;
 
 // returns false iff there is no more suitable edges
 bool iterate_to_next_edge(const vector<bool>& visited, const vector<const Edge*>& edges, int& ind) {
@@ -12,20 +12,20 @@ bool iterate_to_next_edge(const vector<bool>& visited, const vector<const Edge*>
     return false;
 }
 
-int get_suitable_edges(const vector<bool>& visited, const Airport* airport, int day) {
+int get_suitable_edges(const vector<bool>& visited, const Airport* airport, int day, int max_edge_ind) {
     int suitable_edges_cnt = 0;
 
     int ind = -1;
     while (iterate_to_next_edge(visited, airport->edges_from_by_day[day], ind)) {
         ++suitable_edges_cnt;
-        if (suitable_edges_cnt == MAX_EDGE_IND) {
+        if (suitable_edges_cnt == max_edge_ind) {
             return suitable_edges_cnt;
         }
     }
     ind = -1;
     while (iterate_to_next_edge(visited, airport->edges_from_by_day[0], ind)) {
         ++suitable_edges_cnt;
-        if (suitable_edges_cnt == MAX_EDGE_IND) {
+        if (suitable_edges_cnt == max_edge_ind) {
             return suitable_edges_cnt;
         }
     }
@@ -74,10 +74,10 @@ Edge const* get_suitable_edge(const vector<bool>& visited, const Airport* airpor
 }
 
 Edge const* get_next_edge(const Assignment* task, const vector<bool>& visited, const Airport* airport, int day) {
-    int suitable_edges_cnt = get_suitable_edges(visited, airport, day);
+    int suitable_edges_cnt = get_suitable_edges(visited, airport, day, task->max_edge_index);
     if (!suitable_edges_cnt) return nullptr;
 
-    int ind = rand() % min(MAX_EDGE_IND, suitable_edges_cnt) + 1;
+    int ind = rand() % min(task->max_edge_index, suitable_edges_cnt) + 1;
     return get_suitable_edge(visited, airport, day, ind);
 } 
 
