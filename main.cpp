@@ -214,22 +214,8 @@ int main() {
 
     task.init();
 
-    /*
     cerr << "Assignment initialised" << endl;
-    Solution sol = run_until_correct(solve_simple,&task);
-    sol.score();
-    cerr << "SIMPLE SCORE " << sol.total_score << '\n';
-    if(!sol.correct) {
-        cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
-        // sol = run_binary_search_o<<<<<<< HEADn_edges(dynamic_zone_order_dp, &task);
-    }
-    sol = solve(&task, sol);
-    // Solution sol = run_binary_search_on_edges(dynamic_zone_order_dp, &task);
-    if(!sol.correct) {
-        cerr << "SOLUTION INCORRECT!" << endl;
-    }
-    */
-    Solution sol = run_until_tl(greedy, &task);
+    Solution sol = do_final_solve(&task);
     sol.score();
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
