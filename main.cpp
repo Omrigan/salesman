@@ -195,6 +195,23 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
     return best;
 }
 
+Solution run_until_correct(function<Solution(Assignment*)> original, Assignment* task) {
+    Solution best = original(task);
+    while(!best.correct) {
+        Solution temp = original(task);
+        temp.score();
+        if(temp.correct and (!best.correct or temp.total_score < best.total_score)) {
+            if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
+            else cerr << "Solution found!" << endl;
+            best = move(temp);
+        }
+        if(task->ready_to_stop()) {
+            break;
+        }
+    }
+    return best;
+}
+
 Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, Assignment* task) {
     int max_cost = max_element(task->edges.begin(), task->edges.end())->cost;
     // this should be modified
@@ -290,12 +307,12 @@ int main() {
 
     task.init();
     cerr << "Assignment initialised" << endl;
-    Solution sol = solve_simple(&task);
+    Solution sol = run_until_correct(solve_simple,&task);
     sol.score();
     cerr << "SIMPLE SCORE " << sol.total_score << '\n';
     if(!sol.correct) {
         cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
-        // sol = run_binary_search_on_edges(dynamic_zone_order_dp, &task);
+        // sol = run_binary_search_o<<<<<<< HEADn_edges(dynamic_zone_order_dp, &task);
     }
     sol = solve(&task, sol);
     // Solution sol = run_binary_search_on_edges(dynamic_zone_order_dp, &task);
