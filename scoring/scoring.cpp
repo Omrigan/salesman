@@ -70,7 +70,15 @@ void score(statistics* stats, string name){
     
     for(auto& test_name : tests){
         string cmd = "cat " + test_folder + "/" + test_name + " | ./main > test.out";
-        system(cmd.c_str());
+        if(system(cmd.c_str())!=0){
+            cerr << "your solution failed. Your scores so far:" << endl;
+             for(auto& test : (*stats)[test_name]){
+                cerr << test.first << " " << test.second << endl;
+             }
+            exit(228);
+
+        }
+
         ifstream result("test.out");
         int score;
         result >> score;
@@ -155,6 +163,6 @@ int main(int argc, char* argv[]) {
     system(("git commit -m \"" + run_name + " scored\" ").c_str());
 	
     
-    system("git push");
+    // system("git push");
     return 0;
 }
