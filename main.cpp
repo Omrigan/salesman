@@ -25,25 +25,24 @@ using Time = Clock::time_point;
 
 #include "basic_structs.cpp" // nosubmit
 #include "dp.cpp" //nosubmit
+#include "greedy.cpp" //nosubmit
 
 Solution solve_simple(Assignment* task) {
     Solution sol{ .task = task };
     Airport* current_place = task->start;
     std::vector<bool> visited(task->N);
     visited[current_place->zone] = true;
-    for(int current_day = 0; current_day<task->N; ++current_day){
+    for (int current_day = 1; current_day<= task->N; ++current_day) {
         int limit = current_place->edges_from.size();
-        if(limit!=0){
-           
+        if(limit!=0) {
             int offset = rand() % limit;
-            if(current_day==task->N-1)
-            {
+            if (current_day == task->N) {
                 visited[task->start->zone] = false;
             }
-            for(int i = 0; i < limit;++i){
-                int idx = (i+offset)%limit;
+            for (int i = 0; i < limit; ++i) {
+                int idx = (i + offset) % limit;
                 Edge* e = current_place->edges_from[idx];
-                if(!visited[e->to->zone] and (e->day==-1 or e->day==current_day)){
+                if (!visited[e->to->zone] and (e->day == 0 or e->day == current_day)) {
                     sol.sequence.push_back(e);
                     current_place = e->to;
                     visited[current_place->zone] = true;
@@ -66,11 +65,11 @@ Solution solve(Assignment *task, Solution & sol) {
     const int MAX_TIME = 300;
     //  const int MAX_REGION = 300;
     std::vector<std::vector<std::vector<Edge * > > > canfromto;
-    canfromto.resize(MAX_TIME, std::vector<std::vector<Edge * > > (MAX_AIRPORT, std::vector<Edge * > (MAX_AIRPORT, nullptr)));
+    canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge * > > (MAX_AIRPORT, std::vector<Edge * > (MAX_AIRPORT, nullptr)));
     // preprocessing
     for (auto & edge : task->edges) {
-        if (edge.day == -1) {
-            for (int day = 0; day < MAX_TIME; day++) {
+        if (edge.day == 0) {
+            for (int day = 1; day <= MAX_TIME; day++) {
                 canfromto[day][edge.from->idx][edge.to->idx] = &edge;
             }
             continue;
@@ -289,23 +288,23 @@ int main() {
         }
     }
 
-    // cerr << task.zones[0] << endl;
     cerr << "Airports read" << endl;
     task.start = &task.airports[task.airport_name_to_idx[start_airport_str]];
     while(!cin.eof()) {
         string from, to;
-        // cerr << from << to << endl;
         int day, cost;
         cin >> from >> to >> day >> cost;
         task.edges.push_back({
             &task.airports[task.airport_name_to_idx[from]],
             &task.airports[task.airport_name_to_idx[to]],
-            day - 1,
+            day,
             cost}
         );
     }
 
     task.init();
+
+    /*
     cerr << "Assignment initialised" << endl;
     Solution sol = run_until_correct(solve_simple,&task);
     sol.score();
@@ -319,8 +318,13 @@ int main() {
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
-    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+    */
+    Solution sol = run_until_tl(greedy, &task);
     sol.score();
+    if(!sol.correct) {
+        cerr << "SOLUTION INCORRECT!" << endl;
+    }
+    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
     cerr << "Score: " << sol.total_score << endl;
     cerr << "Max day reached: " << max_day << endl;
     sol.print();
