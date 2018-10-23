@@ -111,6 +111,7 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> original, As
         for (int i = 0; i < MAX_ATTEMPT_EDGES_CNT; ++i) {
             task->max_edge_index = med_edges_cnt;
             Solution sol = original(task);
+            sol.score();
             if (sol.correct) {
                 success = true;
                 break;

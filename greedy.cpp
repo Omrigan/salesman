@@ -82,26 +82,33 @@ Edge const* get_next_edge(const Assignment* task, const vector<bool>& visited, c
     return get_suitable_edge(visited, airport, day, ind);
 } 
 
+vector<const Edge*> get_greedy_path(const Assignment* task, vector<bool> visited, Airport* cur_airport, int cur_day) {
+    vector<const Edge*> path_edges;
+    for (; cur_day <= task->N; ++cur_day) {
+        if (cur_day == task->N) {
+            visited[task->start->zone] = false;
+        }
+
+        Edge const* next_edge = get_next_edge(task, visited, cur_airport, cur_day);
+
+        if (next_edge == nullptr) {
+            return {};
+        }
+
+        path_edges.push_back(next_edge);
+        visited[next_edge->to->zone] = true;
+        cur_airport = next_edge->to;
+    }
+    return path_edges;
+}
+
 Solution greedy(const Assignment* task) {
     Solution solution{ .task = task };
     Airport* cur_airport = task->start;
     vector<bool> visited(task->N, false);
     visited[cur_airport->zone] = true;
-    for(int cur_day = 1; cur_day <= task->N; ++cur_day) {
-        if (cur_day == task->N) {
-            visited[task->start->zone] = false;
-        }
-        Edge const* next_edge = get_next_edge(task, visited, cur_airport, cur_day);
 
-        if (next_edge == nullptr) {
-            return Solution();
-        }
+    solution.sequence = get_greedy_path(task, move(visited), cur_airport, 1);
 
-        solution.sequence.push_back(next_edge);
-        visited[next_edge->to->zone] = true;
-        cur_airport = next_edge->to;
-    }
-
-    solution.score();
     return solution;
 }
