@@ -124,7 +124,7 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> original, As
         }
     }
 
-    max_edges_cnt += 2;
+    max_edges_cnt = min(max_edges_cnt + 2, get_max_edges_cnt(task));
     task->max_edge_index = max_edges_cnt;
 
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
