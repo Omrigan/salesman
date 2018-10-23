@@ -25,6 +25,11 @@ static constexpr int RESHUFFLE_ATTEMPTS = 112;
 static constexpr int MAX_ATTEMPT_EDGES_COST = 112;
 static constexpr int MAX_ATTEMPT_EDGES_CNT = 512;
 
+// yummy
+int64_t get_time_in_ms(Time time) {
+    return chrono::duration_cast<chrono::milliseconds>(chrono::time_point_cast<chrono::milliseconds>(time).time_since_epoch()).count();
+}
+
 struct Edge;
 
 struct Airport {
@@ -45,8 +50,10 @@ struct Edge {
 };
 
 struct Assignment {
-    Time start_time = Clock::now(), 
-    finish_time;
+    Time start_time = Clock::now();
+    Time finish_time = Clock::now();
+    int64_t start_time_long = 0;
+    int64_t finish_time_long = 0;
     int kind = -1; // 0 - small, 1 - medium, 2 - large
     int N;
     Airport* start;
@@ -87,6 +94,9 @@ struct Assignment {
             kind = 3;
             finish_time = start_time + std::chrono::milliseconds(14000);
         }
+
+        start_time_long = get_time_in_ms(start_time);
+        finish_time_long = get_time_in_ms(finish_time);
     }
 
     bool ready_to_stop() {

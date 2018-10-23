@@ -1,10 +1,11 @@
 #include "basic_structs.cpp" //nosubmit
 
 Solution run_main(function<Solution(Assignment*)> original, 
-                      Assignment* task, 
-                      bool return_first_solution = false,
-                      int cnt = -1) {
+                  Assignment* task, 
+                  bool return_first_solution = false,
+                  int cnt = -1) {
     Solution best = original(task);
+    best.score();
     int all_runs = 0;
     int successful_runs = 0;
     while (true) {
@@ -27,7 +28,41 @@ Solution run_main(function<Solution(Assignment*)> original,
         }
     }
 
+    cerr << "Total number of runs: " << all_runs << endl;
+    cerr << "Successful number of runs: " << successful_runs << endl;
     cerr << "Successful runs ratio: " << successful_runs / static_cast<double>(all_runs) << endl;
+
+    return best;
+}
+
+Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
+                                function<Solution(Assignment*, Solution&)> second_solution,
+                                Assignment* task) {
+    Solution best = first_solution(task);
+    best.score();
+    while (true) {
+        Solution temp = first_solution(task);
+        temp.score();
+        if (temp.correct and (!best.correct or temp.total_score < best.total_score)) {
+            if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
+            else cerr << "Solution found!" << endl;
+            best = move(temp); 
+        }
+        int64_t now_ms_long = get_time_in_ms(Clock::now());
+        if (((now_ms_long - task->start_time_long) * 3) / 2 > (task->finish_time_long - task->start_time_long)) {
+            break;
+        }
+    }
+
+    // remove when release
+    assert(best.correct);
+
+    while (true) {
+        best = second_solution(task, best);
+        if (task->ready_to_stop()) {
+            break;
+        }
+    }
 
     return best;
 }
@@ -87,7 +122,7 @@ int get_max_edges_cnt(const Assignment* task) {
 
 // call this only with "greedy" function
 Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
-                                    function<Solution(Assignment*)> final_solution,
+                                    function<Solution(Assignment*, Solution&)> final_solution,
                                     Assignment* task) {
     int min_edges_cnt = 0;
     int max_edges_cnt = get_max_edges_cnt(task);
@@ -117,6 +152,6 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
-    return run_main(final_solution, task);
+    return run_multiple_solutions(bs_solution, final_solution, task);
 }
 
