@@ -15,9 +15,13 @@ Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int
 
 Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task) {
     Solution best = original(task);
+    int all_runs = 0;
+    int successful_runs = 0;
     while(true) {
         Solution temp = original(task);
         temp.score();
+        successful_runs += temp.correct;
+        ++all_runs;
         if(temp.correct and (!best.correct or temp.total_score < best.total_score)) {
             if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
             else cerr << "Solution found!" << endl;
@@ -27,6 +31,9 @@ Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task
             break;
         }
     }
+
+    cerr << "Successful runs ratio: " << successful_runs / static_cast<double>(all_runs) << endl;
+
     return best;
 }
 
@@ -101,7 +108,9 @@ int get_max_edges_cnt(const Assignment* task) {
 }
 
 // call this only with "greedy" function
-Solution edges_number_binary_search(function<Solution(Assignment*)> original, Assignment* task) {
+Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
+                                    function<Solution(Assignment*)> final_solution,
+                                    Assignment* task) {
     int min_edges_cnt = 0;
     int max_edges_cnt = get_max_edges_cnt(task);
 
@@ -110,7 +119,7 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> original, As
         bool success = false;
         for (int i = 0; i < MAX_ATTEMPT_EDGES_CNT; ++i) {
             task->max_edge_index = med_edges_cnt;
-            Solution sol = original(task);
+            Solution sol = bs_solution(task);
             sol.score();
             if (sol.correct) {
                 success = true;
@@ -130,6 +139,6 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> original, As
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
-    return run_until_tl(original, task);
+    return run_until_tl(final_solution, task);
 }
 

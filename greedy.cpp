@@ -11,10 +11,13 @@ struct GreedyManager {
         visited[airport->zone] = true;
     }
 
+    GreedyManager(const GreedyManager& other) = default;
+
     void make_step(const Edge* next_edge, vector<const Edge*>* solution_edges = nullptr) {
         if (solution_edges != nullptr) solution_edges->push_back(next_edge);
         visited[next_edge->to->zone] = true;
         airport = next_edge->to;
+        ++day;
     }
     
     Airport* airport;
@@ -137,7 +140,7 @@ Edge const* get_next_edge(GreedyManager* mngr) {
 // return empty vector iff no path found
 vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
     vector<const Edge*> path_edges;
-    for (; mngr->day <= mngr->task->N; ++mngr->day) {
+    for (; mngr->day <= mngr->task->N;) {
         if (mngr->day == mngr->task->N) {
             mngr->visited[mngr->task->start->zone] = false;
         }
@@ -160,3 +163,51 @@ Solution greedy(const Assignment* task) {
     return solution;
 }
 
+Solution greedy_mcts(const Assignment* task) {
+    GreedyManager mngr(task);
+    Solution solution { .task = task };
+    for (; mngr.day <= mngr.task->N;) {
+        if (mngr.day == mngr.task->N) {
+            mngr.visited[mngr.task->start->zone] = false;
+        }
+
+        int best_result = 0;
+        const Edge* next_edge = nullptr;
+
+        SuitableEdgesIterator it(mngr.airport->edges_from_by_day[0], mngr.airport->edges_from_by_day[mngr.day]);
+        int suitable_edges_cnt = it.get_number_of_suitable_edges(mngr.visited);
+        it.reset();
+
+        for (int i = 0; i < min(task->max_edge_index, suitable_edges_cnt); ++i) {
+            const Edge* next_edge_tmp = it.get_next_suitable_edge(mngr.visited);
+
+            assert(next_edge_tmp != nullptr);
+
+            GreedyManager mngr_tmp(mngr);
+
+            mngr_tmp.make_step(next_edge_tmp);
+
+            vector<const Edge*> cur_path = get_greedy_path(&mngr_tmp);
+
+            for (int i = 0; i < 1000; ++i) {
+                int cur_result = accumulate(cur_path.begin(), cur_path.end(), next_edge_tmp->cost, [](int sum, const Edge* a) {
+                    return sum + a->cost;
+                });
+
+                if ((!cur_path.empty() or mngr.day == mngr.task->N) and
+                    (next_edge == nullptr or best_result > cur_result)) {
+                    best_result = cur_result;
+                    next_edge = next_edge_tmp;
+                }
+            }
+        }
+
+        if (next_edge == nullptr) {
+            return Solution();
+        }
+
+        mngr.make_step(next_edge, &solution.sequence);
+    }
+
+    return solution;
+}
