@@ -1,7 +1,5 @@
 #include "basic_structs.cpp" //nosubmit
 
-static constexpr int RETRY_NUMBER = 20;
-
 // returns false iff there is no more suitable edges
 bool iterate_to_next_edge(const vector<bool>& visited, const vector<const Edge*>& edges, int& ind) {
     ind = min(ind + 1, static_cast<int>(edges.size()));
@@ -78,6 +76,9 @@ Edge const* get_next_edge(const Assignment* task, const vector<bool>& visited, c
     if (!suitable_edges_cnt) return nullptr;
 
     int ind = rand() % min(task->max_edge_index, suitable_edges_cnt) + 1;
+    if (day == task->N) {
+        ind = 1;
+    }
     return get_suitable_edge(visited, airport, day, ind);
 } 
 
@@ -86,7 +87,10 @@ Solution greedy(const Assignment* task) {
     Airport* cur_airport = task->start;
     vector<bool> visited(task->N, false);
     visited[cur_airport->zone] = true;
-    for(int cur_day = 1; cur_day < task->N; ++cur_day) {
+    for(int cur_day = 1; cur_day <= task->N; ++cur_day) {
+        if (cur_day == task->N) {
+            visited[task->start->zone] = false;
+        }
         Edge const* next_edge = get_next_edge(task, visited, cur_airport, cur_day);
 
         if (next_edge == nullptr) {
@@ -97,20 +101,6 @@ Solution greedy(const Assignment* task) {
         visited[next_edge->to->zone] = true;
         cur_airport = next_edge->to;
     }
-
-    const Edge * next_edge = nullptr;
-    for (const Edge* edge : cur_airport->edges_from) {
-        if ((edge->day == 0 or edge->day == task->N) and
-            edge->to->zone == task->start->zone) {
-            if (next_edge == nullptr or next_edge->cost > edge->cost) {
-                next_edge = edge;
-            }
-        }
-    }
-    if (next_edge == nullptr) {
-        return Solution();
-    }
-    solution.sequence.push_back(next_edge);
 
     solution.score();
     return solution;
