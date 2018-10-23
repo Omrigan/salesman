@@ -59,7 +59,7 @@ Solution solve_simple(Assignment* task) {
 }
 
 Solution do_final_solve(Assignment* task){
-    Solution sol = run_until_correct(solve_simple, task);
+    Solution sol = run_main(solve_simple, task, true);
     sol.score();
     cerr << "SIMPLE SCORE " << sol.total_score << '\n';
     if(!sol.correct) {

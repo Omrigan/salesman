@@ -1,56 +1,34 @@
 #include "basic_structs.cpp" //nosubmit
 
-Solution run_cnt(function<Solution(Assignment*)> original, Assignment* task, int cnt) {
-    Solution best = original(task);
-    for(int i = 1; i < cnt; ++i) {
-        Solution temp = original(task);
-        temp.score();
-        if(temp.correct and temp.total_score < best.total_score) {
-            cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
-            best = temp;
-        }
-    }
-    return best;
-}
-
-Solution run_until_tl(function<Solution(Assignment*)> original, Assignment* task) {
+Solution run_main(function<Solution(Assignment*)> original, 
+                      Assignment* task, 
+                      bool return_first_solution = false,
+                      int cnt = -1) {
     Solution best = original(task);
     int all_runs = 0;
     int successful_runs = 0;
-    while(true) {
+    while (true) {
         Solution temp = original(task);
         temp.score();
         successful_runs += temp.correct;
         ++all_runs;
-        if(temp.correct and (!best.correct or temp.total_score < best.total_score)) {
+        if (temp.correct and (!best.correct or temp.total_score < best.total_score)) {
             if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
             else cerr << "Solution found!" << endl;
             best = move(temp);
+            if (return_first_solution) return best; 
         }
-        if(task->ready_to_stop()) {
+        if (task->ready_to_stop()) {
             break;
+        }
+        cnt = max(cnt - 1, -1);
+        if (cnt == 0) {
+            return best;
         }
     }
 
     cerr << "Successful runs ratio: " << successful_runs / static_cast<double>(all_runs) << endl;
 
-    return best;
-}
-
-Solution run_until_correct(function<Solution(Assignment*)> original, Assignment* task) {
-    Solution best = original(task);
-    while(!best.correct) {
-        Solution temp = original(task);
-        temp.score();
-        if(temp.correct and (!best.correct or temp.total_score < best.total_score)) {
-            if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
-            else cerr << "Solution found!" << endl;
-            best = move(temp);
-        }
-        if(task->ready_to_stop()) {
-            break;
-        }
-    }
     return best;
 }
 
@@ -87,7 +65,7 @@ Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, As
 
     task->max_edge_cost = max_cost;
 
-    Solution tmp_solution = run_until_tl(original, task);
+    Solution tmp_solution = run_main(original, task);
     if (tmp_solution.correct and
         (!best_solution.correct or
         (best_solution.total_score > tmp_solution.total_score))) {
@@ -139,6 +117,6 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
-    return run_until_tl(final_solution, task);
+    return run_main(final_solution, task);
 }
 
