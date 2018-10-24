@@ -1,4 +1,4 @@
-4
+6
 best_greedy_local_solve_stochastic 6
 fair_salesman_small.in 11956
 not_regular_only_small.in 29783
@@ -30,4 +30,20 @@ one_cicle_small.in 13672
 public3.in 80197
 regular_small.in 26210
 whirl_small.in 36882
+
+simple 6
+fair_salesman_small.in 11956
+not_regular_only_small.in 29783
+one_cicle_small.in 13672
+public3.in 93414
+regular_small.in 26210
+whirl_small.in 36882
+
+solve_simple 6
+fair_salesman_small.in 0
+not_regular_only_small.in 0
+one_cicle_small.in 0
+public3.in 0
+regular_small.in 0
+whirl_small.in 0
 
