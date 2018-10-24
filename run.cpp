@@ -127,6 +127,9 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
     int min_edges_cnt = 0;
     int max_edges_cnt = get_max_edges_cnt(task);
 
+    Solution best_solution;
+    best_solution.score();
+
     while (min_edges_cnt + 1 < max_edges_cnt) {
         int med_edges_cnt = (min_edges_cnt + max_edges_cnt) / 2;
         bool success = false;
@@ -135,6 +138,9 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
             Solution sol = bs_solution(task);
             sol.score();
             if (sol.correct) {
+                if (!best_solution.correct or best_solution.total_score > sol.total_score) {
+                    best_solution = move(sol);
+                }
                 success = true;
                 break;
             }
@@ -146,12 +152,19 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
         }
     }
 
+    // modify this!
     max_edges_cnt = min(max_edges_cnt + 2, get_max_edges_cnt(task));
     task->max_edge_index = max_edges_cnt;
 
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
-    return run_multiple_solutions(bs_solution, final_solution, task);
+    Solution main_solution = run_multiple_solutions(bs_solution, final_solution, task);
+
+    if (!best_solution.correct or best_solution.total_score > main_solution.total_score) {
+        best_solution = move(main_solution);
+    }
+
+    return best_solution;
 }
 
