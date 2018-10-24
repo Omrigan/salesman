@@ -23,7 +23,7 @@ using namespace std;
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;
-vector<string> tests = {"public1.in", "public3.in"};
+vector<string> tests = {"public1.in", "public2.in", "public3.in", "public4.in",};
 string test_folder = "tests";
 
 using statistics = map<string, map<string,double>>;
@@ -158,9 +158,9 @@ int main(int argc, char* argv[]) {
     
     
     dump_statistics(stats);
-    system("git add .");
+    // system("git add .");
     
-    system(("git commit -m \"" + run_name + " scored\" ").c_str());
+    // system(("git commit -m \"" + run_name + " scored\" ").c_str());
 	
     
     // system("git push");
