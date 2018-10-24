@@ -60,7 +60,7 @@ struct Assignment {
     Assignment() = default;
 
     // compiler says that it's better not to inline destructor
-    // 
+    // ¯\_(ツ)_/¯
     ~Assignment();
 
     Time start_time = Clock::now();
