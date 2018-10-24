@@ -67,6 +67,8 @@ Solution do_final_solve(Assignment* task){
     }
     // sol = solve_local_search(task, sol);
     sol = edges_number_binary_search(greedy, solve_local_search, task);
+    sol.score();
+    cerr << sol.total_score << endl;
     // sol = run_main(greedy, task);
     return sol;
 }
