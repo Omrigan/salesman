@@ -1,0 +1,16 @@
+best_greedy_local_solve_stochastic:
+    task->margin = 2;
+    task->use_random_swaps = true;
+    edges_number_binary_search(greedy, solve_local_search, task);
+
+greedy_local_solve_deterministic:
+    edges_number_binary_search(greedy, solve_local_search, task);
+
+local_search:
+    solve_local_search(task, sol);
+
+naive_greedy:
+    run_main(greedy, task);
+
+simple:
+    run_main(solve_simple, task);
