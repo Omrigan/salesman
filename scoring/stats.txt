@@ -1,7 +1,14 @@
-3
+4
+ 1
+ 0
+
 local_search 2
 public1.in 1396
 public3.in 60899
+
+main 2
+public1.in 0
+public3.in 0
 
 solve_simple 2
 public1.in 6666
