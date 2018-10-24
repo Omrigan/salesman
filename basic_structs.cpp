@@ -123,9 +123,9 @@ Assignment::~Assignment() = default;
 struct Solution {
     Solution() = default;
     
-    Solution (const Assignment* task_) : task(task_) {}
+    Solution(const Assignment* task_) : task(task_) {}
 
-    const Assignment* task;
+    const Assignment* task = nullptr;
     vector<const Edge*> sequence;
     int total_score = 0;
     bool correct = false;
@@ -134,6 +134,9 @@ struct Solution {
         total_score = 0;
         if (task != nullptr) {
             correct = (static_cast<int>(sequence.size()) == task->N);
+            if (!correct) {
+                return;
+            }
             for(const Edge* x : sequence) {
                 total_score += x->cost;
             }

@@ -37,6 +37,7 @@ generate:
 	./gen
 
 runtests: build
+	cat tests/public3.in | ./main > out/public3.out
 	cat tests/whirl_small.in | ./main > out/whirl_small.out
 	cat tests/one_cicle_small.in | ./main > out/one_cicle_small.out
 	cat tests/regular_small.in | ./main > out/regular_small.out

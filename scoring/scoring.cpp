@@ -159,11 +159,11 @@ int main(int argc, char* argv[]) {
     
     
     dump_statistics(stats);
-    system("git add .");
+    // system("git add .");
     
-    system(("git commit -m \"" + run_name + " scored\" ").c_str());
+    // system(("git commit -m \"" + run_name + " scored\" ").c_str());
 	
-    
+
     // system("git push");
     return 0;
 }

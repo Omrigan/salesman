@@ -1,21 +1,33 @@
 4
-greedy_local_search_deterministic 6
-fair_salesman_small.in 0
-not_regular_only_small.in 0
-one_cicle_small.in 0
-public3.in 0
-regular_small.in 0
-whirl_small.in 0
+best_greedy_local_solve_stochastic 6
+fair_salesman_small.in 11956
+not_regular_only_small.in 29783
+one_cicle_small.in 13672
+public3.in 46958
+regular_small.in 29688
+whirl_small.in 36882
 
-local_search 2
-public1.in 1396
+greedy_local_solve_deterministic 6
+fair_salesman_small.in 11956
+not_regular_only_small.in 29783
+one_cicle_small.in 13672
+public3.in 49452
+regular_small.in 26210
+whirl_small.in 36882
+
+local_search 6
+fair_salesman_small.in 11956
+not_regular_only_small.in 37654
+one_cicle_small.in 13672
 public3.in 60899
+regular_small.in 42624
+whirl_small.in 36882
 
-main 2
-public1.in 0
-public3.in 0
-
-solve_simple 2
-public1.in 6666
-public3.in 93414
+naive_greedy 6
+fair_salesman_small.in 11956
+not_regular_only_small.in 29783
+one_cicle_small.in 13672
+public3.in 80197
+regular_small.in 26210
+whirl_small.in 36882
 
