@@ -78,6 +78,7 @@ struct Assignment {
     vector<vector<Airport*>> zone_airports;
     int max_edge_cost = -1;
     int max_edge_index = 22;
+    bool use_random_swaps = false;
 
     void init() {
         for (Airport& airport : airports) {	

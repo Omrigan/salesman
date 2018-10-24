@@ -39,7 +39,7 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
     }
     auto basic_seq = sol.sequence;
     auto global_best_sequence = sol.sequence;
-    long long global_best_score = COST_INF;
+    long long global_best_score = total_cost;
     for (int j = 0; j < MAX_ITER_OUTER && !task->ready_to_stop(); j++) {
         sol.sequence = basic_seq;
         for (int p = 0; p < MAX_ITER_INNER && !task->ready_to_stop(); p++) {
@@ -107,7 +107,9 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                     continue;
                 }
                 delta_cost += min_cost;
-                if (delta_cost < 0) {
+                if (delta_cost <= 0 or
+                    (task->use_random_swaps and
+                    total_cost / (10000 * static_cast<double>(delta_cost)) > rand() / static_cast<double>(RAND_MAX))) {
                     //  поменять ребра в sol
                     sol.sequence[first] = A_new.first;
                     sol.sequence[first + 1] = A_new.second;
