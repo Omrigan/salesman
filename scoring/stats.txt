@@ -1,6 +1,11 @@
 4
- 1
- 0
+greedy_local_search_deterministic 6
+fair_salesman_small.in 0
+not_regular_only_small.in 0
+one_cicle_small.in 0
+public3.in 0
+regular_small.in 0
+whirl_small.in 0
 
 local_search 2
 public1.in 1396
