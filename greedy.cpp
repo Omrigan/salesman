@@ -4,8 +4,8 @@ struct GreedyManager {
     GreedyManager() = delete;
 
     GreedyManager(const Assignment* task_, int day_ = 1)
-        : task(task_)
-        , day(day_) {
+        :  day(day_)
+        , task(task_) {
         airport = task->start;
         visited.assign(task->N, false);
         visited[airport->zone] = true;
@@ -38,8 +38,9 @@ struct SuitableEdgesIterator {
 
     // returns false iff there are no more suitable edges
     bool iterate_to_next_edge(const vector<bool>& visited, const vector<const Edge*>* edges, int& ind) {
-        ind = min(ind + 1, static_cast<int>(edges->size()));
-        while (ind < edges->size()) {
+        int edges_size = edges->size();
+        ind = min(ind + 1, edges_size);
+        while (ind < edges_size) {
             if (!visited[(*edges)[ind]->to->zone]) return true;
             ++ind;
         }
@@ -112,7 +113,7 @@ private:
     }
 
     bool is_valid(int ind, const vector<const Edge*>* edges) {
-        return ind < edges->size();
+        return ind < static_cast<int>(edges->size());
     }
 
     const Edge* get_next_indexed_edge(const vector<bool>& visited, 
@@ -158,14 +159,14 @@ vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
 
 Solution greedy(const Assignment* task) {
     GreedyManager mngr(task);
-    Solution solution { .task = task };
+    Solution solution(task);
     solution.sequence = get_greedy_path(&mngr);
     return solution;
 }
 
 Solution greedy_mcts(const Assignment* task) {
     GreedyManager mngr(task);
-    Solution solution { .task = task };
+    Solution solution(task);
     for (; mngr.day <= mngr.task->N;) {
         if (mngr.day == mngr.task->N) {
             mngr.visited[mngr.task->start->zone] = false;
@@ -189,7 +190,7 @@ Solution greedy_mcts(const Assignment* task) {
 
             vector<const Edge*> cur_path = get_greedy_path(&mngr_tmp);
 
-            for (int i = 0; i < 1000; ++i) {
+            for (int j = 0; j < 1000; ++j) {
                 int cur_result = accumulate(cur_path.begin(), cur_path.end(), next_edge_tmp->cost, [](int sum, const Edge* a) {
                     return sum + a->cost;
                 });

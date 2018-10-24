@@ -43,15 +43,14 @@ vector<int> get_zone_order(const Assignment* task) {
 int max_size(const vector<vector<Airport*>>& v) {
     int max_size = 0;
     for (const vector<Airport*> a : v) {
-        if (max_size < a.size()) max_size = a.size();
+        if (max_size < static_cast<int>(a.size())) max_size = a.size();
     }
     return max_size;
 }
 
 
 Solution dp_construct_solution_from(const Assignment* task, const vector<vector<const Edge*>> dp_restore, int local_idx) {
-    Solution solution;
-    solution.task = task;
+    Solution solution(task);
 
     int day = task->N;
     while (day > 0) {
@@ -74,7 +73,7 @@ void recalc_dp(const Assignment* task,
                const int zone,
                const int day,
                bool& made_relaxation) {
-    for (int airport_idx = 0; airport_idx < task->zone_airports[prev_zone].size(); ++airport_idx) {
+    for (int airport_idx = 0; airport_idx < static_cast<int>(task->zone_airports[prev_zone].size()); ++airport_idx) {
         if (best_distance[0][airport_idx] != -1) {
             const Airport* prev_airport = task->zone_airports[prev_zone][airport_idx];
             for (const Edge* edge : prev_airport->edges_from) {
@@ -134,7 +133,6 @@ Solution fixed_zone_order_dp(const Assignment* task) {
         }
     }
 
-    bool success = false;
     auto best_final_distance = min_element(best_distance[0].begin(), best_distance[0].end(), distance_cmp);
     if (*best_final_distance == -1) {
         return Solution();
@@ -150,7 +148,7 @@ int get_best_available_zone(const Assignment* task,
                             int day) {
     set<int> new_available_zones;
 
-    for (int prev_airport = 0; prev_airport < task->zone_airports[prev_zone].size(); ++prev_airport) {
+    for (int prev_airport = 0; prev_airport < static_cast<int>(task->zone_airports[prev_zone].size()); ++prev_airport) {
         if (cur_distances[prev_airport] != -1) {
             for (const Edge* edge : task->zone_airports[prev_zone][prev_airport]->edges_from) {
                 if ((task->max_edge_cost == -1 or edge->cost <= task->max_edge_cost) and

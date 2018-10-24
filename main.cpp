@@ -31,7 +31,7 @@ using Time = Clock::time_point;
 #include "local_search.cpp" //nosubmit
 
 Solution solve_simple(Assignment* task) {
-    Solution sol{ .task = task };
+    Solution sol(task);
     Airport* current_place = task->start;
     std::vector<bool> visited(task->N);
     visited[current_place->zone] = true;

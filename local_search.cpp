@@ -44,8 +44,8 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
         sol.sequence = basic_seq;
         for (int p = 0; p < MAX_ITER_INNER && !task->ready_to_stop(); p++) {
             std::vector<std::pair<int, int> > tries;
-            for (int first = 0; first < sol.sequence.size() - 3; first++) {
-                for (int second = first + 2; second < sol.sequence.size() - 1; second++) {
+            for (int first = 0; first < static_cast<int>(sol.sequence.size()) - 3; first++) {
+                for (int second = first + 2; second < static_cast<int>(sol.sequence.size()) - 1; second++) {
                     tries.push_back({first, second});
                 }
             }

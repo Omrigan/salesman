@@ -33,6 +33,13 @@ int64_t get_time_in_ms(Time time) {
 struct Edge;
 
 struct Airport {
+    Airport() = default;
+
+    Airport(int idx_, int zone_, int local_idx_)
+        : idx(idx_)
+        , zone(zone_)
+        , local_idx(local_idx_) {}
+
     int idx, zone;
     int local_idx;
     vector<Edge*> edges_from;
@@ -50,6 +57,12 @@ struct Edge {
 };
 
 struct Assignment {
+    Assignment() = default;
+
+    // compiler says that it's better not to inline destructor
+    // 
+    ~Assignment();
+
     Time start_time = Clock::now();
     Time finish_time = Clock::now();
     int64_t start_time_long = 0;
@@ -71,14 +84,14 @@ struct Assignment {
             airport.edges_from_by_day.resize(N + 1);	
         }
 
-        for (int i = 0; i < edges.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(edges.size()); ++i) {
             edges[i].from->edges_from.push_back(&edges[i]);
             edges[i].from->edges_from_by_day[edges[i].day].push_back(&edges[i]);
         }
 
         for (Airport& airport : airports) {	
-            for (vector<const Edge*>& edges : airport.edges_from_by_day) {	
-                sort(edges.begin(), edges.end(), [](const Edge* a, const Edge* b) {	
+            for (vector<const Edge*>& airport_edges : airport.edges_from_by_day) {	
+                sort(airport_edges.begin(), airport_edges.end(), [](const Edge* a, const Edge* b) {	
                     return a->cost < b->cost;	
                 });	
             }	
@@ -104,7 +117,13 @@ struct Assignment {
     }
 };
 
+Assignment::~Assignment() = default;
+
 struct Solution {
+    Solution() = default;
+    
+    Solution (const Assignment* task_) : task(task_) {}
+
     const Assignment* task;
     vector<const Edge*> sequence;
     int total_score = 0;
@@ -113,7 +132,7 @@ struct Solution {
     void score() {
         total_score = 0;
         if (task != nullptr) {
-            correct = sequence.size() == task->N;
+            correct = (static_cast<int>(sequence.size()) == task->N);
             for(const Edge* x : sequence) {
                 total_score += x->cost;
             }
@@ -122,7 +141,7 @@ struct Solution {
 
     void print() {
         cout << total_score << endl;
-        for(int i = 0; i < sequence.size(); ++i) {
+        for(int i = 0; i < static_cast<int>(sequence.size()); ++i) {
             const Edge* e = sequence[i];
             cout << task->idx_to_airport[e->from->idx] << " " << task->idx_to_airport[e->to->idx] << " "
                  << i + 1 << " " << e->cost << endl;
@@ -130,4 +149,5 @@ struct Solution {
     }
 
 };
+
 #endif
