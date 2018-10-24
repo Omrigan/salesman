@@ -72,11 +72,15 @@ Solution do_final_solve(Assignment* task){
 }
 
 int main() {
+    auto start_time = std::chrono::high_resolution_clock::now();
+
     Assignment task;
     // debug
     // FILE * f = freopen("/Users/istar/Desktop/salesman/public/1.in", "r", stdin);
     srand(1357908642);
    
+    ios_base::sync_with_stdio(false);
+
     cerr << "Starting" << endl;
     string start_airport_str, input;
     cin >> task.N >> start_airport_str;
@@ -118,6 +122,13 @@ int main() {
             cost}
         );
     }
+
+    auto current_time = std::chrono::high_resolution_clock::now();
+
+    cerr << "Input read in "
+         << chrono::duration_cast<chrono::milliseconds>(current_time - start_time).count() 
+         << " milliseconds" 
+         << endl;
 
     task.init();
 
