@@ -83,7 +83,81 @@ struct Assignment {
     int margin = 2;
     double greedy_solution_runtime = 1.5;
 
-    void init() {
+    void init_time() {
+        start_time = Clock::now();
+
+        if (N <= 20) { 
+            kind = 1;
+            finish_time = start_time + std::chrono::milliseconds(2700);
+        } else if (N <= 100) {
+            kind = 2;
+            finish_time = start_time + std::chrono::milliseconds(4700);
+        } else {
+            kind = 3;
+            finish_time = start_time + std::chrono::milliseconds(14000);
+        }
+
+        start_time_long = get_time_in_ms(start_time);
+        finish_time_long = get_time_in_ms(finish_time);
+    }
+
+    void read_data() {
+        cerr << "Starting" << endl;
+        string start_airport_str, input;
+        cin >> N >> start_airport_str;
+        init_time();
+        getline(cin,input);
+
+        // one dirty hack to avoid reallocations
+        airports.reserve(MAX_AIRPORT);
+        
+        zones.resize(N);
+        for(int i = 0; i < N; ++i) {
+            getline(cin, zones[i]);
+            string airports_raw;
+            getline(cin, airports_raw);
+            istringstream iss(airports_raw);
+            string item;
+            zone_airports.push_back({});
+            int cur_local_idx = 0;
+            while (getline(iss, item, ' ')) {
+                if (airport_name_to_idx.find(item) == airport_name_to_idx.end()) {
+                    airport_name_to_idx[item] = idx_to_airport.size();
+                    idx_to_airport.push_back(item);
+                }     
+                airports.push_back({ static_cast<int>(airports.size()), i, cur_local_idx });
+                zone_airports[i].push_back(&airports.back());
+                ++cur_local_idx;
+            }
+        }
+
+        cerr << "Airports read" << endl;
+        start = &airports[airport_name_to_idx[start_airport_str]];
+        while(!cin.eof()) {
+            string from, to;
+            int day, cost;
+            cin >> from >> to >> day >> cost;
+            edges.push_back({
+                &airports[airport_name_to_idx[from]],
+                &airports[airport_name_to_idx[to]],
+                day,
+                cost}
+            );
+
+            if ((get_time_in_ms(Clock::now()) - start_time_long) * 3 > finish_time_long - start_time_long) {
+                break;
+            }
+        }
+
+        long long current_time = get_time_in_ms(Clock::now());
+
+        cerr << "Input read in "
+            << current_time - start_time_long 
+            << " milliseconds" 
+            << endl;
+    }
+
+    void init_edges() {
         for (Airport& airport : airports) {	
             airport.edges_from_by_day.resize(N + 1);	
         }
@@ -100,20 +174,6 @@ struct Assignment {
                 });	
             }	
         }
-
-        if (N <= 20) { 
-            kind = 1;
-            finish_time = start_time + std::chrono::milliseconds(2700);
-        } else if (N <= 100) {
-            kind = 2;
-            finish_time = start_time + std::chrono::milliseconds(4700);
-        } else {
-            kind = 3;
-            finish_time = start_time + std::chrono::milliseconds(14000);
-        }
-
-        start_time_long = get_time_in_ms(start_time);
-        finish_time_long = get_time_in_ms(finish_time);
     }
 
     bool ready_to_stop() {

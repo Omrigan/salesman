@@ -72,65 +72,15 @@ Solution do_final_solve(Assignment* task){
 }
 
 int main() {
-    auto start_time = std::chrono::high_resolution_clock::now();
+    srand(1357908642);
 
     Assignment task;
-    // debug
-    // FILE * f = freopen("/Users/istar/Desktop/salesman/public/1.in", "r", stdin);
-    srand(1357908642);
-   
+
     ios_base::sync_with_stdio(false);
 
-    cerr << "Starting" << endl;
-    string start_airport_str, input;
-    cin >> task.N >> start_airport_str;
-    getline(cin,input);
-
-    // one dirty hack to avoid reallocations
-    task.airports.reserve(MAX_AIRPORT);
+    task.read_data();
     
-    task.zones.resize(task.N);
-    for(int i = 0; i < task.N; ++i) {
-        getline(cin, task.zones[i]);
-        string airports_raw;
-        getline(cin, airports_raw);
-        istringstream iss(airports_raw);
-        string item;
-        task.zone_airports.push_back({});
-        int cur_local_idx = 0;
-        while (getline(iss, item, ' ')) {
-            if (task.airport_name_to_idx.find(item) == task.airport_name_to_idx.end()) {
-                task.airport_name_to_idx[item] = task.idx_to_airport.size();
-                task.idx_to_airport.push_back(item);
-            }     
-            task.airports.push_back({ static_cast<int>(task.airports.size()), i, cur_local_idx });
-            task.zone_airports[i].push_back(&task.airports.back());
-            ++cur_local_idx;
-        }
-    }
-
-    cerr << "Airports read" << endl;
-    task.start = &task.airports[task.airport_name_to_idx[start_airport_str]];
-    while(!cin.eof()) {
-        string from, to;
-        int day, cost;
-        cin >> from >> to >> day >> cost;
-        task.edges.push_back({
-            &task.airports[task.airport_name_to_idx[from]],
-            &task.airports[task.airport_name_to_idx[to]],
-            day,
-            cost}
-        );
-    }
-
-    auto current_time = std::chrono::high_resolution_clock::now();
-
-    cerr << "Input read in "
-         << chrono::duration_cast<chrono::milliseconds>(current_time - start_time).count() 
-         << " milliseconds" 
-         << endl;
-
-    task.init();
+    task.init_edges();
 
     cerr << "Assignment initialised" << endl;
     Solution sol = do_final_solve(&task);
