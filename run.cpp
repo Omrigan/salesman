@@ -49,7 +49,7 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
             best = move(temp); 
         }
         int64_t now_ms_long = get_time_in_ms(Clock::now());
-        if (((now_ms_long - task->start_time_long) * 3) / 2 > (task->finish_time_long - task->start_time_long)) {
+        if ((now_ms_long - task->start_time_long) * task->greedy_solution_runtime > (task->finish_time_long - task->start_time_long)) {
             break;
         }
     }

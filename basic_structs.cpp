@@ -81,6 +81,7 @@ struct Assignment {
     bool use_random_swaps = false;
     // modify this!
     int margin = 2;
+    double greedy_solution_runtime = 1.5;
 
     void init() {
         for (Airport& airport : airports) {	
