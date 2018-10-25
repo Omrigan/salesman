@@ -14,13 +14,15 @@
 #include <cstdlib>
 #include <fstream>
 
+#include "basic_structs.cpp"
+
 using namespace std;
 
 namespace gen {
     int random(int a, int b) {
         if (b <= a)
             cerr << "INVALID ARGUMENT\n";
-        return rand() % (b - a) + a;
+        return RandomGenerator::get_rand_int() % (b - a) + a;
     }
 
     struct AirportName {
@@ -113,7 +115,7 @@ namespace gen {
             }
         }
         bool is_edge() {
-            return rand() % MAX_PROB < prob;
+            return RandomGenerator::get_rand_int() % MAX_PROB < prob;
         }
     };
 

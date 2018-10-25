@@ -131,7 +131,7 @@ Edge const* get_next_edge(GreedyManager* mngr) {
     it.reset();
     if (!suitable_edges_cnt) return nullptr;
 
-    int ind = rand() % min(mngr->task->max_edge_index, suitable_edges_cnt) + 1;
+    int ind = RandomGenerator::get_rand_int() % min(mngr->task->max_edge_index, suitable_edges_cnt) + 1;
     if (mngr->day == mngr->task->N) {
         ind = 1;
     }

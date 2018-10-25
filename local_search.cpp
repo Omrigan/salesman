@@ -30,14 +30,14 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                     tries.push_back({first, second});
                 }
             }
-            std::random_shuffle(tries.begin(), tries.end());
+            shuffle(tries.begin(), tries.end(), RandomGenerator::gen_rand);
             //  выбираем пару объектов в цепочке
             int max_edge_id = sol.sequence.size(); // видимо первый не трогаем, а последний обрабатываем отдельно
             if (max_edge_id <= 3)
                 return sol;
             for (auto &tst : tries) {
-                int first = tst.first; // rand() % (max_edge_id - 3); // [1, max_edge_id - 1]
-                int second = tst.second; // rand() % (max_edge_id - first - 3) + first + 2;
+                int first = tst.first; // RandomGenerator::get_rand_int() % (max_edge_id - 3); // [1, max_edge_id - 1]
+                int second = tst.second; // RandomGenerator::get_rand_int() % (max_edge_id - first - 3) + first + 2;
                 if (second < first + 2)
                     cerr << "WRONG RANDOM";
 
@@ -90,7 +90,7 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                 delta_cost += min_cost;
                 if (delta_cost <= 0 or
                     (task->use_random_swaps and
-                    total_cost / (10000 * static_cast<double>(delta_cost)) > rand() / static_cast<double>(RAND_MAX))) {
+                    total_cost / (10000 * static_cast<double>(delta_cost)) > RandomGenerator::get_rand_int() / static_cast<double>(__INT_MAX__))) {
                     //  поменять ребра в sol
                     sol.sequence[first] = A_new.first;
                     sol.sequence[first + 1] = A_new.second;

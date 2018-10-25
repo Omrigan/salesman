@@ -4,12 +4,12 @@
 #include <functional>
 #include <iostream>
 #include <iterator>
+#include <random>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
-
 
 using namespace std;
 
@@ -54,6 +54,16 @@ struct Edge {
     bool operator < (const Edge& other) const {
         return cost < other.cost;
     }
+};
+
+struct RandomGenerator {
+    constexpr static int seed = 1357908642;
+    static mt19937_64 gen_rand;
+    static std::uniform_int_distribution<> distr;
+    static std::uniform_int_distribution<long long> distr_long;
+
+    static int get_rand_int();
+    static long long get_rand_int64();
 };
 
 struct Assignment {

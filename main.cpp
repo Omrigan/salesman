@@ -1,11 +1,22 @@
 // TODO: unify variables namestyle
-// TODO: use better random
 
 #include "basic_structs.cpp" //nosubmit
 #include "run.cpp" //nosubmit
 #include "dp.cpp" //nosubmit
 #include "greedy.cpp" //nosubmit
 #include "local_search.cpp" //nosubmit
+
+mt19937_64 RandomGenerator::gen_rand(RandomGenerator::seed);
+uniform_int_distribution<> RandomGenerator::distr;
+uniform_int_distribution<long long> RandomGenerator::distr_long;
+
+int RandomGenerator::get_rand_int() {
+    return RandomGenerator::distr(RandomGenerator::gen_rand);
+}
+
+long long RandomGenerator::get_rand_int64() {
+    return RandomGenerator::distr_long(RandomGenerator::gen_rand);
+}
 
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
@@ -19,7 +30,7 @@ Solution solve_simple(Assignment* task) {
     for (int current_day = 1; current_day<= task->N; ++current_day) {
         int limit = current_place->edges_from.size();
         if(limit!=0) {
-            int offset = rand() % limit;
+            int offset = RandomGenerator::get_rand_int() % limit;
             if (current_day == task->N) {
                 visited[task->start->zone] = false;
             }
@@ -47,14 +58,14 @@ Solution do_final_solve(Assignment* task){
         cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
     }
     // sol = solve_local_search(task, sol);
+    task->use_random_swaps = true;
+    task->margin = 1;
     sol = edges_number_binary_search(greedy, solve_local_search, task);
     // sol = run_main(greedy, task);
     return sol;
 }
 
 int main() {
-    srand(1357908642);
-
     Assignment task;
 
     ios_base::sync_with_stdio(false);
