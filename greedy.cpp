@@ -232,13 +232,13 @@ Solution greedy_mcts(const Assignment* task) {
 
             assert(next_edge_tmp != nullptr);
 
-            GreedyManager mngr_tmp(mngr);
+            for (int j = 0; j < MAX_ATTEMPT_MCTS_CNT; ++j) {
+                GreedyManager mngr_tmp(mngr);
 
-            mngr_tmp.make_step(next_edge_tmp);
+                mngr_tmp.make_step(next_edge_tmp);
 
-            vector<const Edge*> cur_path = get_greedy_path(&mngr_tmp);
+                vector<const Edge*> cur_path = get_greedy_path(&mngr_tmp);
 
-            for (int j = 0; j < 1000; ++j) {
                 long long cur_result = accumulate(cur_path.begin(), cur_path.end(), next_edge_tmp->cost, [](int sum, const Edge* a) {
                     return sum + a->cost;
                 });
