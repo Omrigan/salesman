@@ -29,20 +29,19 @@ vector<string> tests; //= {"fair_salesman_small.in",
 string test_folder = "tests";
 #include <filesystem>
  
-struct path_leaf_string
-{
-    std::string operator()(const std::filesystem::directory_entry& entry) const
-    {
-        return entry.path().filename().string();
-    }
-};
- 
 void read_directory(const std::string& name)
 {
-    std::filesystem::path p(name);
-    std::filesystem::directory_iterator start(p);
-    std::filesystem::directory_iterator end;
-    std::transform(start, end, std::back_inserter(tests), path_leaf_string());
+    system("ls tests > scoring/tests.txt");
+    ifstream f("scoring/tests.txt");
+    while(!f.eof()){
+        string test;
+        f >> test;
+        if(test.size()>=2){
+            tests.push_back(test);
+            cerr << test << endl; 
+        }
+    }
+    
 }
 
 using statistics = map<string, map<string,double>>;
