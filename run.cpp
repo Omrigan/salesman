@@ -55,6 +55,8 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
     // remove when release
     assert(best.correct);
 
+    cerr << "Score before local solve: " << best.total_score << endl;
+
     while (true) {
         best = second_solution(task, best);
         if (task->ready_to_stop()) {
@@ -157,6 +159,10 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
     Solution main_solution = run_multiple_solutions(bs_solution, final_solution, task);
+
+    cerr << "Binary search only solution is " << (best_solution.correct ? "" : "in") << "correct" << endl;
+    cerr << "Binary search only score: " << best_solution.total_score << endl;
+    cerr << "Main score: " << main_solution.total_score << endl;
 
     if (!best_solution.correct or best_solution.total_score > main_solution.total_score) {
         best_solution = move(main_solution);

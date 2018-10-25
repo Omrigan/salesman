@@ -78,7 +78,7 @@ int main() {
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
-    cerr << "Completed in: " << chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+    cerr << "Completed in: " << chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << " ms" << endl;
     cerr << "Score: " << sol.total_score << endl;
     cerr << "Max day reached: " << max_day << endl;
     sol.print();
