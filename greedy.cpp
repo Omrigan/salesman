@@ -149,23 +149,22 @@ const Edge* get_next_edge_random(GreedyManager* mngr) {
 }
 
 const Edge* get_random_edge_weighted(GreedyManager* mngr, const vector<const Edge*>& suitable_edges) {
-    // we can probably do this faster (not asymptotically) with binary search
-    long long cost_sum = accumulate(suitable_edges.begin(), suitable_edges.end(), 0, [](long long sum, const Edge* a) {
-        return a->cost + sum;
-    });
     if (mngr->day == mngr->task->N) {
         return suitable_edges.front();
     }
 
-    vector<long long> edges_costs;
-    transform(suitable_edges.begin(), suitable_edges.end(), back_inserter(edges_costs), [cost_sum](const Edge* a) {
-        return cost_sum - a->cost;
+    vector<double> edges_weights;
+    transform(suitable_edges.begin(), suitable_edges.end(), back_inserter(edges_weights), 
+        [&suitable_edges](const Edge* a) {
+        return sqrt(suitable_edges.front()->cost / static_cast<double>(a->cost));
     });
 
-    discrete_distribution<long long> edges_costs_distr(edges_costs.begin(), edges_costs.end()); 
-    int ind = edges_costs_distr(RandomGenerator::gen_rand);
+    discrete_distribution<int> edges_costs_distr(edges_weights.begin(), edges_weights.end()); 
+
     // remove .at when release
-    return suitable_edges.at(ind);
+    const Edge* next_edge = suitable_edges.at(edges_costs_distr(RandomGenerator::gen_rand));
+    assert(next_edge != nullptr); 
+    return next_edge;
 }
 
 const Edge* get_next_edge_weighted(GreedyManager* mngr) {
@@ -176,6 +175,8 @@ const Edge* get_next_edge_weighted(GreedyManager* mngr) {
 
     vector<const Edge*> suitable_edges = it.get_next_n_edges(mngr->visited, min(mngr->task->max_edge_index, suitable_edges_cnt));
     it.reset();
+
+    assert(static_cast<int>(suitable_edges.size()) == suitable_edges_cnt);
 
     return get_random_edge_weighted(mngr, suitable_edges);
 }
