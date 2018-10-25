@@ -1,4 +1,4 @@
-#include "../main.cpp"
+#include "../newmain.cpp"
 
 int main(){
     read_and_solve([](Assignment * task){

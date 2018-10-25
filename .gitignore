@@ -6,3 +6,4 @@ submit.cpp
 test.out
 score
 gen
+*.bin

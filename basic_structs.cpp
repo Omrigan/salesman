@@ -237,6 +237,9 @@ struct Solution {
     }
 
     void print() {
+        if(!correct){
+            cout << -1 << endl;
+        }
         cout << total_score << endl;
         for(int i = 0; i < static_cast<int>(sequence.size()); ++i) {
             const Edge* e = sequence[i];

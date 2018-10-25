@@ -82,13 +82,13 @@ statistics  load_statistics(){
 
 
 void score(statistics* stats, string name){
-    if(stats->find(name)!=stats->end()){
-        cerr << name << " exists" << endl;
-        exit(1);
-    }
+    // if(stats->find(name)!=stats->end()){
+    //     cerr << name << " exists" << endl;
+    //     exit(1);
+    // }
     
     for(auto& test_name : tests){
-        string cmd = "cat " + test_folder + "/" + test_name + " | ./main > test.out";
+        string cmd = "cat " + test_folder + "/" + test_name + " | ./" + name + ".bin > test.out";
         if(system(cmd.c_str())!=0){
             cerr << "your solution failed. Your scores so far:" << endl;
              for(auto& test : (*stats)[name]){
@@ -101,6 +101,11 @@ void score(statistics* stats, string name){
         ifstream result("test.out");
         int score;
         result >> score;
+        if((*stats)[name][test_name]>0 and (*stats)[name][test_name]!=score){
+            cerr << "Solution " << name << " printed somewhat different on " << test_name << ". Old score "<<(*stats)[name][test_name] <<
+             " new score " << score << ". Cannot proceed. Sorry" << endl;
+             exit(1);
+        }
         (*stats)[name][test_name] = score;
     }
 }
@@ -162,7 +167,10 @@ int main(int argc, char* argv[]) {
     
     string run_name = argv[1];
     if(run_name!="skip"){
-        if(system("make build")!=0){
+        string cmd = "./build.sh solutions/" + run_name + ".cpp " + run_name + ".bin";
+
+        if(system(cmd.c_str())!=0){
+            cerr << "Failed to build. Sorry" << endl;
             exit(228);
         }
         score(&stats, run_name);    
@@ -172,7 +180,12 @@ int main(int argc, char* argv[]) {
     
     for(size_t i = 2; i < argc; i++)
     {
-        rebuild_report(&stats, argv[i]);
+        string baseline_name = argv[i];
+        if(stats.find(baseline_name) == stats.end()){
+            cerr << "Cant find " << baseline_name << " solution. Sorry" << endl;
+            exit(2);
+        }
+        rebuild_report(&stats, baseline_name);
     }
     
     

@@ -1,3 +1,14 @@
+# Build
+build:
+	./build.sh main.cpp main
+
+build-scoring:
+	g++ -O2 scoring/scoring.cpp --std=c++17 -lstdc++fs -o score
+
+debug:
+	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread -Wall -Wextra -Winline -Wshadow
+
+# Run
 run: build
 	cat sample.in | ./main
 	cat public/1.in | ./main
@@ -9,15 +20,23 @@ runall: build
 	cat public/3.in | ./main > out/3.out
 	cat public/4.in | ./main > out/4.out
 
-build:
-	g++ -std=c++14 -DDEBUG -pthread -O2 main.cpp -o main -Wall -Wextra -Winline -Wshadow
+runtests: build
+	cat tests/public3.in | ./main > out/public3.out
+	cat tests/whirl_small.in | ./main > out/whirl_small.out
+	cat tests/one_cicle_small.in | ./main > out/one_cicle_small.out
+	cat tests/regular_small.in | ./main > out/regular_small.out
+	cat tests/not_regular_only_small.in | ./main > out/not_regular_only_small.out
+	cat tests/fair_salesman_small.in | ./main > out/fair_salesman_small.out
 
-build-scoring:
-	g++ -O2 scoring/scoring.cpp --std=c++17 -lstdc++fs -o score
+score: build-scoring
+	./score simple
+	./score skip simple
 
-debug:
-	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread -Wall -Wextra -Winline -Wshadow
+generate:
+	g++ -std=c++14 -O0 generation.cpp -o gen
+	./gen
 
+# Other
 download:
 	mkdir -p public
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/1.in -O public/1.in
@@ -28,18 +47,3 @@ download:
 submit:
 	cat basic_structs.cpp run.cpp local_search.cpp dp.cpp greedy.cpp main.cpp | grep -v nosubmit > submit.cpp
 	cat submit.cpp | xsel -b
-
-baseline: build-scoring
-	./score skip simple_new_tests
-
-generate:
-	g++ -std=c++14 -O0 generation.cpp -o gen
-	./gen
-
-runtests: build
-	cat tests/public3.in | ./main > out/public3.out
-	cat tests/whirl_small.in | ./main > out/whirl_small.out
-	cat tests/one_cicle_small.in | ./main > out/one_cicle_small.out
-	cat tests/regular_small.in | ./main > out/regular_small.out
-	cat tests/not_regular_only_small.in | ./main > out/not_regular_only_small.out
-	cat tests/fair_salesman_small.in | ./main > out/fair_salesman_small.out
