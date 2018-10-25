@@ -1,3 +1,15 @@
+#include <algorithm>
+#include <assert.h>
+#include <chrono>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <random>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
 #include "basic_structs.cpp" //nosubmit
 //ничего нипанятна опишите аргументы
 Solution run_main(function<Solution(Assignment*)> original, 
@@ -36,7 +48,7 @@ Solution run_main(function<Solution(Assignment*)> original,
 }
 
 Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
-                                function<Solution(Assignment*, Solution&)> second_solution,
+                                function<Solution(Assignment*, Solution)> second_solution,
                                 Assignment* task) {
     Solution best = first_solution(task);
     best.score();
@@ -57,8 +69,15 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
     // remove when release
     // assert(best.correct);
 
+    cerr << "Score before local solve: " << best.total_score << endl;
+
+    Solution tmp_solution = best;
+
     while (true) {
-        best = second_solution(task, best);
+        tmp_solution = second_solution(task, move(tmp_solution));
+        if (!best.correct or (tmp_solution.correct and (tmp_solution.total_score < best.total_score))) {
+            best = tmp_solution;
+        }
         if (task->ready_to_stop()) {
             break;
         }
@@ -122,7 +141,7 @@ int get_max_edges_cnt(const Assignment* task) {
 
 // call this only with "greedy" function
 Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
-                                    function<Solution(Assignment*, Solution&)> final_solution,
+                                    function<Solution(Assignment*, Solution)> final_solution,
                                     Assignment* task) {
     int min_edges_cnt = 0;
     int max_edges_cnt = get_max_edges_cnt(task);
@@ -160,8 +179,14 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
 
     Solution main_solution = run_multiple_solutions(bs_solution, final_solution, task);
 
+    cerr << "Binary search only solution is " << (best_solution.correct ? "" : "in") << "correct" << endl;
+    if (best_solution.correct) cerr << "Binary search only score: " << best_solution.total_score << endl;
+    cerr << "Main score: " << main_solution.total_score << endl;
+
     if (!best_solution.correct or best_solution.total_score > main_solution.total_score) {
         best_solution = move(main_solution);
+    } else {
+        cerr << "MAIN SOLUTION IS WORSE THAN SIMPLE BINARY SEARCH!" << endl;
     }
 
     return best_solution;

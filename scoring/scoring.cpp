@@ -18,7 +18,6 @@
 using namespace std;
 
 // TODO: unify variables namestyle
-// TODO: use better random
 
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;

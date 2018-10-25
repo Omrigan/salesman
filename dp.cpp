@@ -1,24 +1,3 @@
-#include <algorithm>
-#include <assert.h>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-
-using namespace std;
-
-struct Solution;
-struct Assignment;
-struct Edge;
-struct Airport;
-
-#include "basic_structs.cpp" //nosubmit
-
 bool distance_cmp(int a, int b) {
     if (a == -1) {
         return false;
@@ -35,7 +14,7 @@ vector<int> get_zone_order(const Assignment* task) {
     for (int i = 0; i < task->N; ++i) {
         if (i != task->start->zone) zone_order.push_back(i);
     }
-    random_shuffle(zone_order.begin(), zone_order.end());
+    shuffle(zone_order.begin(), zone_order.end(), RandomGenerator::gen_rand);
     zone_order.push_back(task->start->zone);
     return zone_order;
 }
@@ -122,7 +101,7 @@ Solution fixed_zone_order_dp(const Assignment* task) {
             if (!reshuffle_attempts or zone_ind == task->N - 1) {
                 return Solution();
             }
-            random_shuffle(zone_order.begin() + zone_ind, zone_order.end() - 1);
+            shuffle(zone_order.begin() + zone_ind, zone_order.end() - 1, RandomGenerator::gen_rand);
             --zone_ind;
         } else {
             reshuffle_attempts = RESHUFFLE_ATTEMPTS;
@@ -164,7 +143,7 @@ int get_best_available_zone(const Assignment* task,
         return -1;
     } else {
         // rewrite this >_<
-        int zone_ind = random() % new_available_zones.size();
+        int zone_ind = RandomGenerator::get_rand_int() % new_available_zones.size();
         auto zone_it = new_available_zones.begin();
         while (zone_ind) {
             ++zone_it;

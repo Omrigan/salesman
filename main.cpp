@@ -1,34 +1,26 @@
-#include <algorithm>
-#include <assert.h>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <numeric>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <thread>
-#include <stdio.h>
-#include <stdlib.h>
-
-using namespace std;
-
 // TODO: unify variables namestyle
-// TODO: use better random
-
-using Clock = chrono::steady_clock;
-using Microseconds = chrono::microseconds;
-using Time = Clock::time_point;
-
 
 #include "basic_structs.cpp" //nosubmit
 #include "run.cpp" //nosubmit
 #include "dp.cpp" //nosubmit
 #include "greedy.cpp" //nosubmit
 #include "local_search.cpp" //nosubmit
+
+mt19937_64 RandomGenerator::gen_rand(RandomGenerator::seed);
+uniform_int_distribution<> RandomGenerator::distr;
+uniform_int_distribution<long long> RandomGenerator::distr_long;
+
+int RandomGenerator::get_rand_int() {
+    return RandomGenerator::distr(RandomGenerator::gen_rand);
+}
+
+long long RandomGenerator::get_rand_int64() {
+    return RandomGenerator::distr_long(RandomGenerator::gen_rand);
+}
+
+using Clock = chrono::steady_clock;
+using Microseconds = chrono::microseconds;
+using Time = Clock::time_point;
 
 Solution solve_simple(Assignment* task) {
     Solution sol(task);
@@ -38,7 +30,7 @@ Solution solve_simple(Assignment* task) {
     for (int current_day = 1; current_day<= task->N; ++current_day) {
         int limit = current_place->edges_from.size();
         if(limit!=0) {
-            int offset = rand() % limit;
+            int offset = RandomGenerator::get_rand_int() % limit;
             if (current_day == task->N) {
                 visited[task->start->zone] = false;
             }
@@ -75,7 +67,7 @@ void read_and_solve(SolutionGen solve){
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
-    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+    cerr << "Completed in: " << chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << " ms" << endl;
     cerr << "Score: " << sol.total_score << endl;
     sol.print();
 }
