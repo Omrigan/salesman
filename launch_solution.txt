@@ -9,8 +9,15 @@ greedy_local_solve_deterministic:
 local_search:
     solve_local_search(task, sol);
 
+local_search_combined:
+    solve_local_search_combined(task, sol);
+
+local_search_3v:
+    solve_local_search_3v(task, sol);
+
 naive_greedy:
     run_main(greedy, task);
 
 simple:
     run_main(solve_simple, task);
+

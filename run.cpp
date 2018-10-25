@@ -66,8 +66,9 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
         }
     }
 
-    // remove when release
-    assert(best.correct);
+    if (!best.correct) {
+        cerr << "FIRST SOLUTION FOUND NO CORRECT PATH!" << endl;
+    }
 
     cerr << "Score before local solve: " << best.total_score << endl;
 
@@ -170,6 +171,8 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
             min_edges_cnt = med_edges_cnt;
         }
     }
+
+    // exit(0);
 
     max_edges_cnt = min(max_edges_cnt + task->margin, get_max_edges_cnt(task));
     task->max_edge_index = max_edges_cnt;
