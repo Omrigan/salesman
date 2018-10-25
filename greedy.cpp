@@ -1,5 +1,7 @@
 #include <numeric>
 
+#include "basic_structs.cpp" //nosubmit
+
 struct GreedyManager {
     GreedyManager() = delete;
 
@@ -82,6 +84,14 @@ struct SuitableEdgesIterator {
         return res;
     }
 
+    vector<const Edge*> get_next_n_edges(const vector<bool>& visited, int n) {
+        vector<const Edge*> res;
+        for (int i = 0; i < n; ++i) {
+            res.push_back(get_next_suitable_edge(visited));
+        }
+        return res;
+    }
+
     // call reset() after calling this function
     int get_number_of_suitable_edges(const vector<bool>& visited, int threshold = -1) {
         reset();
@@ -125,7 +135,7 @@ private:
     }
 };
 
-Edge const* get_next_edge(GreedyManager* mngr) {
+const Edge* get_next_edge_random(GreedyManager* mngr) {
     SuitableEdgesIterator it(mngr->airport->edges_from_by_day[0], mngr->airport->edges_from_by_day[mngr->day]);
     int suitable_edges_cnt = it.get_number_of_suitable_edges(mngr->visited, mngr->task->max_edge_index);
     it.reset();
@@ -136,7 +146,39 @@ Edge const* get_next_edge(GreedyManager* mngr) {
         ind = 1;
     }
     return it.get_next_nth_suitable_edge(mngr->visited, ind);
-} 
+}
+
+const Edge* get_random_edge_weighted(GreedyManager* mngr, const vector<const Edge*>& suitable_edges) {
+    // we can probably do this faster (not asymptotically) with binary search
+    long long cost_sum = accumulate(suitable_edges.begin(), suitable_edges.end(), 0, [](long long sum, const Edge* a) {
+        return a->cost + sum;
+    });
+    if (mngr->day == mngr->task->N) {
+        return suitable_edges.front();
+    }
+
+    vector<long long> edges_costs;
+    transform(suitable_edges.begin(), suitable_edges.end(), back_inserter(edges_costs), [cost_sum](const Edge* a) {
+        return cost_sum - a->cost;
+    });
+
+    discrete_distribution<long long> edges_costs_distr(edges_costs.begin(), edges_costs.end()); 
+    int ind = edges_costs_distr(RandomGenerator::gen_rand);
+    // remove .at when release
+    return suitable_edges.at(ind);
+}
+
+const Edge* get_next_edge_weighted(GreedyManager* mngr) {
+    SuitableEdgesIterator it(mngr->airport->edges_from_by_day[0], mngr->airport->edges_from_by_day[mngr->day]);
+    int suitable_edges_cnt = it.get_number_of_suitable_edges(mngr->visited, mngr->task->max_edge_index);
+    it.reset();
+    if (!suitable_edges_cnt) return nullptr;
+
+    vector<const Edge*> suitable_edges = it.get_next_n_edges(mngr->visited, min(mngr->task->max_edge_index, suitable_edges_cnt));
+    it.reset();
+
+    return get_random_edge_weighted(mngr, suitable_edges);
+}
 
 // return empty vector iff no path found
 vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
@@ -146,7 +188,8 @@ vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
             mngr->visited[mngr->task->start->zone] = false;
         }
 
-        Edge const* next_edge = get_next_edge(mngr);
+        Edge const* next_edge = get_next_edge_random(mngr);
+        // const Edge* next_edge = get_next_edge_weighted(mngr);
 
         if (next_edge == nullptr) {
             return {};
@@ -191,7 +234,7 @@ Solution greedy_mcts(const Assignment* task) {
             vector<const Edge*> cur_path = get_greedy_path(&mngr_tmp);
 
             for (int j = 0; j < 1000; ++j) {
-                int cur_result = accumulate(cur_path.begin(), cur_path.end(), next_edge_tmp->cost, [](int sum, const Edge* a) {
+                long long cur_result = accumulate(cur_path.begin(), cur_path.end(), next_edge_tmp->cost, [](int sum, const Edge* a) {
                     return sum + a->cost;
                 });
 

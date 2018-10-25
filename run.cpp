@@ -67,7 +67,7 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
     }
 
     // remove when release
-    // assert(best.correct);
+    assert(best.correct);
 
     cerr << "Score before local solve: " << best.total_score << endl;
 
