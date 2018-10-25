@@ -1,4 +1,4 @@
-#include "basic_structs.cpp" //nosubmit
+#include <numeric>
 
 struct GreedyManager {
     GreedyManager() = delete;

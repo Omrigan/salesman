@@ -1,22 +1,3 @@
-#include <algorithm>
-#include <assert.h>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <thread>
-#include <stdio.h>
-#include <stdlib.h>
-
-using namespace std;
-
-
-
 Solution solve_local_search(Assignment *task, Solution & sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize

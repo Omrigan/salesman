@@ -1,24 +1,3 @@
-#include <algorithm>
-#include <assert.h>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-
-using namespace std;
-
-struct Solution;
-struct Assignment;
-struct Edge;
-struct Airport;
-
-#include "basic_structs.cpp" //nosubmit
-
 bool distance_cmp(int a, int b) {
     if (a == -1) {
         return false;

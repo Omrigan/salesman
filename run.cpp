@@ -1,5 +1,3 @@
-#include "basic_structs.cpp" //nosubmit
-
 Solution run_main(function<Solution(Assignment*)> original, 
                   Assignment* task, 
                   bool return_first_solution = false,

@@ -1,34 +1,15 @@
-#include <algorithm>
-#include <assert.h>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <iterator>
-#include <numeric>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <thread>
-#include <stdio.h>
-#include <stdlib.h>
-
-using namespace std;
-
 // TODO: unify variables namestyle
 // TODO: use better random
-
-using Clock = chrono::steady_clock;
-using Microseconds = chrono::microseconds;
-using Time = Clock::time_point;
-
 
 #include "basic_structs.cpp" //nosubmit
 #include "run.cpp" //nosubmit
 #include "dp.cpp" //nosubmit
 #include "greedy.cpp" //nosubmit
 #include "local_search.cpp" //nosubmit
+
+using Clock = chrono::steady_clock;
+using Microseconds = chrono::microseconds;
+using Time = Clock::time_point;
 
 Solution solve_simple(Assignment* task) {
     Solution sol(task);
@@ -88,7 +69,7 @@ int main() {
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
-    cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
+    cerr << "Completed in: " << chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
     cerr << "Score: " << sol.total_score << endl;
     cerr << "Max day reached: " << max_day << endl;
     sol.print();
