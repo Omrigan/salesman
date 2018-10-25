@@ -27,8 +27,7 @@ vector<string> tests; //= {"fair_salesman_small.in",
                         // "public3.in",  "regular_small.in" , "whirl_small.in"};
 
 string test_folder = "tests";
-#include <filesystem>
- 
+
 void read_directory(const std::string& name)
 {
     system("ls tests > scoring/tests.txt");
