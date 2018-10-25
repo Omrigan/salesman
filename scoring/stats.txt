@@ -1,4 +1,4 @@
-9
+10
 best_greedy_local_solve_stochastic 11
 fair_salesman_large.in 0
 fair_salesman_small.in 11956
@@ -98,6 +98,19 @@ not_regular_only_small.in 29783
 one_cicle_large.in 1.05781e+06
 one_cicle_small.in 13672
 public3.in 45224
+regular_large.in 111447
+regular_small.in 26210
+whirl_large.in 910035
+whirl_small.in 36882
+
+new_max_edge_index_stochastic_3opt 11
+fair_salesman_large.in 49779
+fair_salesman_small.in 11956
+not_regular_only_large.in -1
+not_regular_only_small.in 29783
+one_cicle_large.in 1.05781e+06
+one_cicle_small.in 13672
+public3.in 46475
 regular_large.in 111447
 regular_small.in 26210
 whirl_large.in 910035
