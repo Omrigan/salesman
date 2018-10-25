@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <map>
-
+#include <filesystem>
 using namespace std;
 
 // TODO: unify variables namestyle
@@ -23,9 +23,28 @@ using namespace std;
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;
-vector<string> tests = {"fair_salesman_small.in",  "not_regular_only_small.in",  "one_cicle_small.in",  
-    "public3.in",  "regular_small.in" , "whirl_small.in"};
+vector<string> tests; //= {"fair_salesman_small.in", 
+                        // "not_regular_only_small.in",  "one_cicle_small.in",  
+                        // "public3.in",  "regular_small.in" , "whirl_small.in"};
+
 string test_folder = "tests";
+#include <filesystem>
+ 
+struct path_leaf_string
+{
+    std::string operator()(const std::filesystem::directory_entry& entry) const
+    {
+        return entry.path().filename().string();
+    }
+};
+ 
+void read_directory(const std::string& name)
+{
+    std::filesystem::path p(name);
+    std::filesystem::directory_iterator start(p);
+    std::filesystem::directory_iterator end;
+    std::transform(start, end, std::back_inserter(tests), path_leaf_string());
+}
 
 using statistics = map<string, map<string,double>>;
 
@@ -135,7 +154,7 @@ void rebuild_report(statistics* stats, string baseline_name){
 
 int main(int argc, char* argv[]) {
     
-
+    read_directory("tests");
     statistics stats = load_statistics();
 
     if(argc<2){

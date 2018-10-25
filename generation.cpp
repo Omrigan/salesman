@@ -278,27 +278,27 @@ namespace gen {
 void simple_generate() {
     // ---------------
     // regular
-    gen::Params param_regular { .sz_type = "small", .prob = 40, .specific={"regular"} };
+    gen::Params param_regular { .sz_type = "large", .prob = 40, .specific={"regular"} };
     param_regular.init();
     gen::gen_simple(&param_regular);
     // ---------------
     // not regular
-    gen::Params param_without_regular { .sz_type = "small", .prob = 20, .specific={"not_regular_only"} };
+    gen::Params param_without_regular { .sz_type = "large", .prob = 20, .specific={"not_regular_only"} };
     param_without_regular.init();
     gen::gen_simple(&param_without_regular);
     // ---------------
     // честный коммивояжер
-    gen::Params param_fair_salesman { .sz_type = "small", .prob = 50, .specific={"fair_salesman"} };
+    gen::Params param_fair_salesman { .sz_type = "large", .prob = 50, .specific={"fair_salesman"} };
     param_fair_salesman.init();
     gen::gen_simple(&param_fair_salesman);
     // ---------------
     // just один цикл. (возможно интереснее добавить шумовых ребер)
-    gen::Params param_one_cicle { .sz_type = "small", .specific={"one_cicle"} };
+    gen::Params param_one_cicle { .sz_type = "large", .specific={"one_cicle"} };
     param_one_cicle.init();
     gen::gen_cicle(&param_one_cicle);
     // ---------------
     // колесо
-    gen::Params param_whirl { .sz_type = "small", .specific={"whirl"} };
+    gen::Params param_whirl { .sz_type = "large", .specific={"whirl"} };
     param_whirl.init();
     gen::gen_whirl(&param_whirl);
 }

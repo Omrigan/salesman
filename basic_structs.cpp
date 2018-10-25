@@ -24,6 +24,7 @@ static constexpr int MAX_AIRPORT = 300 + 12;
 static constexpr int RESHUFFLE_ATTEMPTS = 112;
 static constexpr int MAX_ATTEMPT_EDGES_COST = 112;
 static constexpr int MAX_ATTEMPT_EDGES_CNT = 512;
+const int MAX_TIME = 300;
 
 // yummy
 int64_t get_time_in_ms(Time time) {
@@ -73,6 +74,7 @@ struct Assignment {
     vector<Airport> airports;
     vector<Edge> edges; 
     unordered_map<string, int> airport_name_to_idx;
+
     vector<string> idx_to_airport;
     vector<string> zones;
     vector<vector<Airport*>> zone_airports;
@@ -99,6 +101,23 @@ struct Assignment {
 
         start_time_long = get_time_in_ms(start_time);
         finish_time_long = get_time_in_ms(finish_time);
+    }
+
+    std::vector<std::vector<std::vector<Edge * > > > canfromto;
+    void init_can_from_to(){
+        if(canfromto.size()!=0){
+            return;
+        }
+        canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge * > > (MAX_AIRPORT, std::vector<Edge * > (MAX_AIRPORT, nullptr)));
+        for (auto & edge : edges) {
+            if (edge.day == 0) {
+                for (int day = 1; day <= MAX_TIME; day++) {
+                    canfromto[day][edge.from->idx][edge.to->idx] = &edge;
+                }
+                continue;
+            }
+            canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
+        }
     }
 
     void read_data() {

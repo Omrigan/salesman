@@ -13,7 +13,7 @@ build:
 	g++ -std=c++14 -DDEBUG -pthread -O2 main.cpp -o main -Wall -Wextra -Winline -Wshadow
 
 build-scoring:
-	g++ -O2 scoring/scoring.cpp -o score
+	g++ -O2 scoring/scoring.cpp --std=c++17 -lstdc++fs -o score
 
 debug:
 	g++ -O0 main.cpp -o main -g -fsanitize=leak -fsanitize=null -pthread -Wall -Wextra -Winline -Wshadow

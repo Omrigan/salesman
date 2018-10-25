@@ -59,17 +59,18 @@ Solution solve_simple(Assignment* task) {
 }
 
 Solution do_final_solve(Assignment* task){
-    Solution sol = run_main(solve_simple, task, true);
+    Solution sol = run_main(solve_simple, task);
     sol.score();
     cerr << "SIMPLE SCORE " << sol.total_score << '\n';
     if(!sol.correct) {
         cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
     }
     // sol = solve_local_search(task, sol);
-    sol = edges_number_binary_search(greedy, solve_local_search, task);
+    // sol = edges_number_binary_search(greedy, solve_local_search, task);
     // sol = run_main(greedy, task);
     return sol;
 }
+
 
 int main() {
     srand(1357908642);
@@ -90,7 +91,6 @@ int main() {
     }
     cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
     cerr << "Score: " << sol.total_score << endl;
-    cerr << "Max day reached: " << max_day << endl;
     sol.print();
 	return 0;
 }

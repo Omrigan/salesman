@@ -1,5 +1,5 @@
 #include "basic_structs.cpp" //nosubmit
-
+//ничего нипанятна опишите аргументы
 Solution run_main(function<Solution(Assignment*)> original, 
                   Assignment* task, 
                   bool return_first_solution = false,
@@ -55,7 +55,7 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
     }
 
     // remove when release
-    assert(best.correct);
+    // assert(best.correct);
 
     while (true) {
         best = second_solution(task, best);

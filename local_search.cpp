@@ -15,7 +15,7 @@
 
 using namespace std;
 
-
+#include "basic_structs.cpp"
 
 Solution solve_local_search(Assignment *task, Solution & sol) {
     sol.score();
@@ -23,20 +23,11 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
     const int MAX_ITER_INNER = 150;
     const int MAX_ITER_OUTER = 10000000;
     long long COST_INF = 10000000000;
-    const int MAX_TIME = 300;
+    
     //  const int MAX_REGION = 300;
-    std::vector<std::vector<std::vector<Edge * > > > canfromto;
-    canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge * > > (MAX_AIRPORT, std::vector<Edge * > (MAX_AIRPORT, nullptr)));
     // preprocessing
-    for (auto & edge : task->edges) {
-        if (edge.day == 0) {
-            for (int day = 1; day <= MAX_TIME; day++) {
-                canfromto[day][edge.from->idx][edge.to->idx] = &edge;
-            }
-            continue;
-        }
-        canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
-    }
+    task->init_can_from_to();
+    
     auto basic_seq = sol.sequence;
     auto global_best_sequence = sol.sequence;
     long long global_best_score = total_cost;
@@ -73,8 +64,8 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                 for (auto airp : task->zone_airports[midA->zone]) {
                     // заходим в зону A
                     // B.from -> Amid -> B.to
-                    Edge *e1 = canfromto[second + 1][B.first->from->idx][airp->idx];
-                    Edge *e2 = canfromto[second + 1 + 1][airp->idx][B.second->to->idx];
+                    Edge *e1 = task->canfromto[second + 1][B.first->from->idx][airp->idx];
+                    Edge *e2 = task->canfromto[second + 1 + 1][airp->idx][B.second->to->idx];
                     if (e1 != nullptr && e2 != nullptr) {
                         long long cost = e1->cost + e2->cost;
                         if (min_cost > cost) {
@@ -92,8 +83,8 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                 for (auto airp : task->zone_airports[midB->zone]) {
                     // заходим в зону B
                     // A.from -> Bmid -> B.to
-                    Edge *e1 = canfromto[first + 1][A.first->from->idx][airp->idx];
-                    Edge *e2 = canfromto[first + 1 + 1][airp->idx][A.second->to->idx];
+                    Edge *e1 = task->canfromto[first + 1][A.first->from->idx][airp->idx];
+                    Edge *e2 = task->canfromto[first + 1 + 1][airp->idx][A.second->to->idx];
                     if (e1 != nullptr && e2 != nullptr) {
                         long long cost = e1->cost + e2->cost;
                         if (min_cost > cost) {
