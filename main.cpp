@@ -50,9 +50,7 @@ Solution solve_simple(Assignment* task) {
     return sol;
 }
 
-void read_and_solve(SolutionGen solve){
-    srand(1357908642);
-
+void read_and_solve(SolutionGen solve) {
     Assignment task;
 
     ios_base::sync_with_stdio(false);
@@ -64,7 +62,7 @@ void read_and_solve(SolutionGen solve){
     cerr << "Assignment initialised" << endl;
     Solution sol = solve(&task);
     sol.score();
-    if(!sol.correct) {
+    if (!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
     }
     cerr << "Completed in: " << chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << " ms" << endl;
@@ -75,14 +73,14 @@ void read_and_solve(SolutionGen solve){
 
 int main() {
     read_and_solve([](Assignment* task){
-        Solution sol = run_main(solve_simple, task);
+        Solution sol = run_main(solve_simple, task, true);
         sol.score();
         cerr << "SIMPLE SCORE " << sol.total_score << '\n';
         if(!sol.correct) {
             cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
         }
         // sol = solve_local_search(task, sol);
-        // sol = edges_number_binary_search(greedy, solve_local_search, task);
+        sol = edges_number_binary_search(greedy, solve_local_search, task);
         // sol = run_main(greedy, task);
         return sol;
     });
