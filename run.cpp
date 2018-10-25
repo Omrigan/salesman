@@ -140,16 +140,15 @@ int get_max_edges_cnt(const Assignment* task) {
     return ret;
 }
 
-// call this only with "greedy" function
-Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
-                                    function<Solution(Assignment*, Solution)> final_solution,
-                                    Assignment* task) {
+// bs stands for binary search
+Solution get_max_edges_index_bs(function<Solution(Assignment*)> bs_solution,
+                                Assignment* task) {
     int min_edges_cnt = 0;
     int max_edges_cnt = get_max_edges_cnt(task);
 
     Solution best_solution;
     best_solution.score();
-
+    
     while (min_edges_cnt + 1 < max_edges_cnt) {
         int med_edges_cnt = (min_edges_cnt + max_edges_cnt) / 2;
         bool success = false;
@@ -171,20 +170,57 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
             min_edges_cnt = med_edges_cnt;
         }
     }
-
-    max_edges_cnt = min(max_edges_cnt + task->margin, get_max_edges_cnt(task));
     task->max_edge_index = max_edges_cnt;
+
+    return best_solution;
+}
+
+// ls stands for linear search
+Solution get_max_edges_index_ls(function<Solution(Assignment*)> bs_solution,
+                                Assignment* task,
+                                int left, int right) {
+    Solution best_solution;
+    best_solution.score();
+
+    // if best_solution stays uninitialized
+    int best_max_edge_index = (left + right) / 2;
+
+    for (int max_edge_index = left; max_edge_index <= right; ++max_edge_index) {
+        task->max_edge_index = max_edge_index;
+        for (int j = 0; j < MAX_ATTEMPT_EDGES_CNT; ++j) {
+            Solution sol = bs_solution(task);
+            sol.score();
+            if (sol.correct and (!best_solution.correct or best_solution.total_score > sol.total_score)) {
+                best_solution = move(sol);
+                best_max_edge_index = max_edge_index;
+            }
+        }
+    }
+    
+    task->max_edge_index = best_max_edge_index;
+
+    return best_solution;
+}
+
+Solution calibrate_max_edges_index(function<Solution(Assignment*)> max_edges_index_solution,
+                                   function<Solution(Assignment*, Solution)> final_solution,
+                                   Assignment* task) {
+    Solution best_solution = get_max_edges_index_bs(max_edges_index_solution, task);
+    best_solution = get_max_edges_index_ls(max_edges_index_solution, 
+                                           task, 
+                                           max(task->max_edge_index - task->margin, 1),
+                                           min(task->max_edge_index + task->margin, get_max_edges_cnt(task)));
 
     cerr << "Maximum edge index: " << task->max_edge_index << endl;
     cerr << "Maximum edge count: " << get_max_edges_cnt(task) << endl;
 
-    Solution main_solution = run_multiple_solutions(bs_solution, final_solution, task);
+    Solution main_solution = run_multiple_solutions(max_edges_index_solution, final_solution, task);
 
-    cerr << "Binary search only solution is " << (best_solution.correct ? "" : "in") << "correct" << endl;
-    if (best_solution.correct) cerr << "Binary search only score: " << best_solution.total_score << endl;
+    cerr << "Solution found when calibrating max edges index is " << (best_solution.correct ? "" : "in") << "correct" << endl;
+    if (best_solution.correct) cerr << "It scores " << best_solution.total_score << endl;
     cerr << "Main score: " << main_solution.total_score << endl;
 
-    if (!best_solution.correct or best_solution.total_score > main_solution.total_score) {
+    if (!best_solution.correct or best_solution.total_score >= main_solution.total_score) {
         best_solution = move(main_solution);
     } else {
         cerr << "MAIN SOLUTION IS WORSE THAN SIMPLE BINARY SEARCH!" << endl;
@@ -192,4 +228,3 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
 
     return best_solution;
 }
-

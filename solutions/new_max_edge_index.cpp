@@ -1,5 +1,4 @@
-
-#include "newmain.cpp" //nosubmit
+#include "../newmain.cpp"
 
 int main() {
     read_and_solve([](Assignment* task){
@@ -9,9 +8,7 @@ int main() {
         if(!sol.correct) {
             cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
         }
-        // sol = solve_local_search(task, sol);
         sol = calibrate_max_edges_index(greedy, solve_local_search, task);
-        // sol = run_main(greedy, task);
         return sol;
     });
 }

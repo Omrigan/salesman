@@ -24,9 +24,10 @@ using Time = Clock::time_point;
 static constexpr int MAX_AIRPORT = 300 + 12;
 static constexpr int RESHUFFLE_ATTEMPTS = 112;
 static constexpr int MAX_ATTEMPT_EDGES_COST = 112;
-static constexpr int MAX_ATTEMPT_EDGES_CNT = 512;
+static constexpr int MAX_ATTEMPT_EDGES_CNT = 1012;
 static constexpr int MAX_ATTEMPT_MCTS_CNT = 212;
-const int MAX_TIME = 300;
+static constexpr int MAX_EDGES_INDEX_CNT = 100;
+static constexpr int MAX_TIME = 300;
 
 // yummy
 int64_t get_time_in_ms(Time time) {
@@ -94,7 +95,7 @@ struct Assignment {
     int max_edge_index = 22;
     bool use_random_swaps = false;
     // modify this!
-    int margin = 2;
+    int margin = 5;
     double greedy_solution_runtime = 1.5;
 
     void init_time() {
