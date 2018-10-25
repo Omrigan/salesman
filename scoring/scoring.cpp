@@ -36,7 +36,6 @@ void read_directory(const std::string& name)
         f >> test;
         if(test.size()>=2){
             tests.push_back(test);
-            cerr << test << endl; 
         }
     }
     
@@ -178,7 +177,6 @@ int main(int argc, char* argv[]) {
     for(size_t i = 2; i < argc; i++)
     {
         string baseline_name = argv[i];
-        cerr << stats.size() << endl;
         if(stats.find(baseline_name) == stats.end()){
             cerr << "Cant find " << baseline_name << " solution. Sorry" << endl;
             exit(2);

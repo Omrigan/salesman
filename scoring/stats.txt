@@ -1,5 +1,5 @@
 5
-best_greedy_local_solve_stochastic 12
+best_greedy_local_solve_stochastic 11
 fair_salesman_large.in 0
 fair_salesman_small.in 11956
 not_regular_only_large.in 0
@@ -12,7 +12,7 @@ regular_small.in 29688
 whirl_large.in 0
 whirl_small.in 36882
 
-greedy_local_solve_deterministic 12
+greedy_local_solve_deterministic 11
 fair_salesman_large.in 0
 fair_salesman_small.in 11956
 not_regular_only_large.in 0
@@ -25,8 +25,7 @@ regular_small.in 26210
 whirl_large.in 0
 whirl_small.in 36882
 
-local_search 12
- 0
+local_search 11
 fair_salesman_large.in 53265
 fair_salesman_small.in 11956
 not_regular_only_large.in 0
@@ -39,8 +38,7 @@ regular_small.in 26210
 whirl_large.in 910891
 whirl_small.in 36882
 
-naive_greedy 12
- 0
+naive_greedy 11
 fair_salesman_large.in 0
 fair_salesman_small.in 11956
 not_regular_only_large.in 0
@@ -53,8 +51,7 @@ regular_small.in 26210
 whirl_large.in 0
 whirl_small.in 36882
 
-simple 12
- 0
+simple 11
 fair_salesman_large.in 995479
 fair_salesman_small.in 11956
 not_regular_only_large.in -1
