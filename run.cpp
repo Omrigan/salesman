@@ -76,7 +76,7 @@ Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
 
     while (true) {
         tmp_solution = second_solution(task, move(tmp_solution));
-        if (!best.correct or (tmp_solution.correct and (tmp_solution.total_score < best.total_score))) {
+        if (tmp_solution.correct and (!best.correct or tmp_solution.total_score < best.total_score)) {
             best = tmp_solution;
         }
         if (task->ready_to_stop()) {
