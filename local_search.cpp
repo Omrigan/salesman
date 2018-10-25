@@ -1,4 +1,11 @@
-Solution solve_local_search(Assignment *task, Solution & sol) {
+bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
+    if (task->use_random_swaps) {
+        return total_cost / (10000 * static_cast<double>(delta_cost)) > RandomGenerator::get_rand_int() / static_cast<double>(__INT_MAX__);
+    }
+    return false;
+}
+
+Solution solve_local_search(Assignment *task, Solution sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize
     const int MAX_ITER_INNER = 150;
@@ -88,9 +95,7 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
                     continue;
                 }
                 delta_cost += min_cost;
-                if (delta_cost <= 0 or
-                    (task->use_random_swaps and
-                    total_cost / (10000 * static_cast<double>(delta_cost)) > RandomGenerator::get_rand_int() / static_cast<double>(__INT_MAX__))) {
+                if (delta_cost <= 0 or swap_anyway(task, total_cost, delta_cost)) {
                     //  поменять ребра в sol
                     sol.sequence[first] = A_new.first;
                     sol.sequence[first + 1] = A_new.second;
@@ -107,7 +112,7 @@ Solution solve_local_search(Assignment *task, Solution & sol) {
             }
         }
     }
-    sol.sequence = global_best_sequence;
+    sol.sequence = move(global_best_sequence);
     sol.score();
     return sol;
 }
