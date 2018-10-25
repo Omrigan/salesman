@@ -1,18 +1,4 @@
-6
- 12
- 0
-fair_salesman_large.in 0
-fair_salesman_small.in 0
-not_regular_only_large.in 0
-not_regular_only_small.in 0
-one_cicle_large.in 0
-one_cicle_small.in 0
-public3.in 0
-regular_large.in 0
-regular_small.in 0
-whirl_large.in 0
-whirl_small.in 0
-
+5
 best_greedy_local_solve_stochastic 11
 fair_salesman_large.in 0
 fair_salesman_small.in 11956
@@ -66,7 +52,7 @@ whirl_large.in 0
 whirl_small.in 36882
 
 simple 11
-fair_salesman_large.in 1.00488e+06
+fair_salesman_large.in 995479
 fair_salesman_small.in 11956
 not_regular_only_large.in -1
 not_regular_only_small.in 29783
