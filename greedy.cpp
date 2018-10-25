@@ -189,8 +189,12 @@ vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
             mngr->visited[mngr->task->start->zone] = false;
         }
 
-        Edge const* next_edge = get_next_edge_random(mngr);
-        // const Edge* next_edge = get_next_edge_weighted(mngr);
+        Edge const* next_edge;
+        if (RandomGenerator::get_rand_int() % 2) {
+            next_edge = get_next_edge_random(mngr); 
+        } else {
+            next_edge = get_next_edge_weighted(mngr);
+        }
 
         if (next_edge == nullptr) {
             return {};
