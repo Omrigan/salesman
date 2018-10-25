@@ -172,8 +172,6 @@ Solution edges_number_binary_search(function<Solution(Assignment*)> bs_solution,
         }
     }
 
-    // exit(0);
-
     max_edges_cnt = min(max_edges_cnt + task->margin, get_max_edges_cnt(task));
     task->max_edge_index = max_edges_cnt;
 
