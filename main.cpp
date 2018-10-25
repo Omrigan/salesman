@@ -58,21 +58,7 @@ Solution solve_simple(Assignment* task) {
     return sol;
 }
 
-Solution do_final_solve(Assignment* task){
-    Solution sol = run_main(solve_simple, task);
-    sol.score();
-    cerr << "SIMPLE SCORE " << sol.total_score << '\n';
-    if(!sol.correct) {
-        cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
-    }
-    // sol = solve_local_search(task, sol);
-    // sol = edges_number_binary_search(greedy, solve_local_search, task);
-    // sol = run_main(greedy, task);
-    return sol;
-}
-
-
-int main() {
+void read_and_solve(SolutionGen solve){
     srand(1357908642);
 
     Assignment task;
@@ -84,7 +70,7 @@ int main() {
     task.init_edges();
 
     cerr << "Assignment initialised" << endl;
-    Solution sol = do_final_solve(&task);
+    Solution sol = solve(&task);
     sol.score();
     if(!sol.correct) {
         cerr << "SOLUTION INCORRECT!" << endl;
@@ -92,5 +78,20 @@ int main() {
     cerr << "Completed in: " << std::chrono::duration_cast<chrono::milliseconds>(Clock::now() - task.start_time).count() << endl;
     cerr << "Score: " << sol.total_score << endl;
     sol.print();
-	return 0;
+}
+
+
+int main() {
+    read_and_solve([](Assignment* task){
+        Solution sol = run_main(solve_simple, task);
+        sol.score();
+        cerr << "SIMPLE SCORE " << sol.total_score << '\n';
+        if(!sol.correct) {
+            cerr << "SIMPLE SOLUTION INCORRECT!" << endl;
+        }
+        // sol = solve_local_search(task, sol);
+        // sol = edges_number_binary_search(greedy, solve_local_search, task);
+        // sol = run_main(greedy, task);
+        return sol;
+    });
 }

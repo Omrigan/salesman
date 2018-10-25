@@ -17,6 +17,7 @@ using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;
 
+
 #ifndef BASIC_STRUCTS
 #define BASIC_STRUCTS 1
 
@@ -237,3 +238,6 @@ struct Solution {
 };
 
 #endif
+
+
+using SolutionGen = function<Solution(Assignment*)>;

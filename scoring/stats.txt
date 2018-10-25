@@ -1,26 +1,41 @@
-7
-best_greedy_local_solve_stochastic 6
+8
+best_greedy_local_solve_stochastic 11
+fair_salesman_large.in 0
 fair_salesman_small.in 11956
+not_regular_only_large.in 0
 not_regular_only_small.in 29783
+one_cicle_large.in 0
 one_cicle_small.in 13672
 public3.in 46958
+regular_large.in 0
 regular_small.in 29688
+whirl_large.in 0
 whirl_small.in 36882
 
-greedy_local_solve_deterministic 6
+greedy_local_solve_deterministic 11
+fair_salesman_large.in 0
 fair_salesman_small.in 11956
+not_regular_only_large.in 0
 not_regular_only_small.in 29783
+one_cicle_large.in 0
 one_cicle_small.in 13672
 public3.in 49452
+regular_large.in 0
 regular_small.in 26210
+whirl_large.in 0
 whirl_small.in 36882
 
-local_search 6
+local_search 11
+fair_salesman_large.in 0
 fair_salesman_small.in 11956
+not_regular_only_large.in 0
 not_regular_only_small.in 37654
+one_cicle_large.in 0
 one_cicle_small.in 13672
 public3.in 60899
+regular_large.in 0
 regular_small.in 42624
+whirl_large.in 0
 whirl_small.in 36882
 
 local_search_new 11
@@ -36,12 +51,17 @@ regular_small.in 26210
 whirl_large.in 910891
 whirl_small.in 36882
 
-naive_greedy 6
+naive_greedy 11
+fair_salesman_large.in 0
 fair_salesman_small.in 11956
+not_regular_only_large.in 0
 not_regular_only_small.in 29783
+one_cicle_large.in 0
 one_cicle_small.in 13672
 public3.in 80197
+regular_large.in 0
 regular_small.in 26210
+whirl_large.in 0
 whirl_small.in 36882
 
 simple 11
@@ -56,6 +76,19 @@ regular_large.in 0
 regular_small.in 26210
 whirl_large.in 0
 whirl_small.in 36882
+
+simple_new 11
+fair_salesman_large.in 0
+fair_salesman_small.in 0
+not_regular_only_large.in 0
+not_regular_only_small.in 0
+one_cicle_large.in 0
+one_cicle_small.in 0
+public3.in 0
+regular_large.in 0
+regular_small.in 0
+whirl_large.in 0
+whirl_small.in 0
 
 simple_new_tests 11
 fair_salesman_large.in 1.02292e+06

@@ -133,10 +133,10 @@ void rebuild_report(statistics* stats, string baseline_name){
     for(auto& run : *stats)
     {
         file << "| " << run.first;
-        for(auto& test : run.second){
-            double value = test.second;
+        for(string& test_name : tests){
+            double value = run.second[test_name];
             if(baseline_name.size()>0){
-                value = 100*(*stats)[baseline_name][test.first]/value;
+                value = 100*(*stats)[baseline_name][test_name]/value;
                 file << "|  " << value << "% ";
             }
             else{

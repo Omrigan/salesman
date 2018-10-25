@@ -30,7 +30,7 @@ submit:
 	cat submit.cpp | xsel -b
 
 baseline: build-scoring
-	./score make-baseline current
+	./score skip simple_new_tests
 
 generate:
 	g++ -std=c++14 -O0 generation.cpp -o gen
