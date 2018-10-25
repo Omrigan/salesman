@@ -179,9 +179,9 @@ struct Assignment {
 
         for (Airport& airport : airports) {	
             for (vector<const Edge*>& airport_edges : airport.edges_from_by_day) {	
-                sort(airport_edges.begin(), airport_edges.end(), [](const Edge* a, const Edge* b) {	
+                stable_sort(airport_edges.begin(), airport_edges.end(), [](const Edge* a, const Edge* b) {	
                     return a->cost < b->cost;	
-                });	
+                });
             }	
         }
     }
@@ -200,7 +200,7 @@ struct Solution {
 
     const Assignment* task = nullptr;
     vector<const Edge*> sequence;
-    int total_score = 0;
+    long long total_score = 0;
     bool correct = false;
 
     void score() {
