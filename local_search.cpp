@@ -346,8 +346,8 @@ ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vecto
     return result_chain;
 }
 
-Solution swap_chains_2v(Assignment* task, Solution sol) {
-    vector<int> edges_indices = generate_k(sol.sequence.size(), 2);
+Solution swap_chains(Assignment* task, Solution sol, int k) {
+    vector<int> edges_indices = generate_k(sol.sequence.size(), k);
     ChainSwapper chain_swapper = swap_chains_step(task, sol, move(edges_indices));
 
     if (chain_swapper.delta_cost <= 0 or swap_anyway(task, chain_swapper.total_cost, chain_swapper.delta_cost)) {
@@ -355,6 +355,14 @@ Solution swap_chains_2v(Assignment* task, Solution sol) {
     }
 
     return sol;
+}
+
+Solution swap_chains_2v(Assignment* task, Solution sol) {
+    return swap_chains(task, move(sol), 2);
+}
+
+Solution swap_chains_3v(Assignment* task, Solution sol) {
+    return swap_chains(task, move(sol), 3);
 }
 
 struct LocalOptimizeManager {
@@ -371,5 +379,6 @@ struct LocalOptimizeManager {
 };
 
 vector<function<Solution(Assignment*, Solution)>> LocalOptimizeManager::optimizations = {
-    swap_chains_2v
+    swap_chains_2v,
+    swap_chains_3v
 };
