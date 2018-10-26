@@ -116,20 +116,21 @@ struct Assignment {
         finish_time_long = get_time_in_ms(finish_time);
     }
 
-    std::vector<std::vector<std::vector<Edge * > > > canfromto;
-    void init_can_from_to(){
-        if(canfromto.size()!=0){
+    std::vector<std::vector<std::vector<Edge* > > > canfromto;
+
+    void init_can_from_to() {
+        if (canfromto.size() != 0) {
             return;
         }
-        canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge * > > (MAX_AIRPORT, std::vector<Edge * > (MAX_AIRPORT, nullptr)));
-        for (auto & edge : edges) {
+        canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge* > > (MAX_AIRPORT, std::vector<Edge* > (MAX_AIRPORT, nullptr)));
+        for (Edge& edge : edges) {
             if (edge.day == 0) {
                 for (int day = 1; day <= MAX_TIME; day++) {
                     canfromto[day][edge.from->idx][edge.to->idx] = &edge;
                 }
-                continue;
+            } else {
+                canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
             }
-            canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
         }
     }
 
