@@ -10,6 +10,7 @@
 #include <vector>
 #include <unordered_map>
 #include <thread>
+#include <set>
 #include <stdio.h>
 #include <stdlib.h>
 #include <climits>
@@ -30,7 +31,7 @@ int random(int a, int b) {
 }
 
 struct IterEdges {
-    IterEdges(const Solution* sol) : sol(sol) {};
+    IterEdges(const Solution* sol_) : sol(sol_) {};
     //  может либо возвращать рандомные ребра, либо сразу все, по которым надо пройтись
     std::vector<std::vector<int> > generate_all() {
         //  for local_solve only;
@@ -44,21 +45,27 @@ struct IterEdges {
         shuffle(tries.begin(), tries.end(), RandomGenerator::gen_rand);
         return tries;
     }
-
+    
     vector<int> generate_k(int k) {
-        int n = sol->sequence.size() - 1;
-        vector<int> ar = {};
-        for (int i = 0; i < k; i++) {
-            int a = ar.size() == 0 ? 0 : ar.back();
-            int b = n - 2 * (k - i);
-            if (a >= b) {
-                cerr << "too small range for generate_k\n";
-                assert(a < b);
-            } else {
-                ar.push_back(random(a, b));
+        assert(static_cast<int>(sol->sequence.size()) >= 2 * k);
+        
+        int module = sol->sequence.size() - k;
+        set<int> distinct_indices;
+        for (int i = 0; i < k; ++i) {
+            int cur_num = RandomGenerator::get_rand_int() % module;
+            while (distinct_indices.count(cur_num)) {
+                cur_num = RandomGenerator::get_rand_int() % module;
             }
+            distinct_indices.insert(cur_num);
         }
-        return ar;
+
+        vector<int> result;
+        copy(distinct_indices.begin(), distinct_indices.end(), back_inserter(result)); 
+        for (int i = 0; i < static_cast<int>(result.size()); ++i) {
+            result[i] += i;
+        }
+
+        return result;
     }
 
     const Solution* sol;
@@ -73,6 +80,8 @@ struct LocalManager {
     }
 
     LocalManager(const LocalManager& other) = default;
+
+    ~LocalManager();
 
     void local_step(vector<int> edges_in_cycle_) {
         // edges_in_cycle: array of indices of edges to a vertex that is to be swaped.
@@ -144,6 +153,8 @@ struct LocalManager {
     Solution* sol;
 };
 
+LocalManager::~LocalManager() = default;
+
 Solution solve_local_search_3v(Assignment* task, Solution sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize
@@ -212,7 +223,7 @@ Solution solve_local_search(Assignment* task, Solution sol) {
             LocalManager manager(task, &sol);
             IterEdges ite(&sol);
             std::vector<std::vector<int> > array_edges_in_cycle = ite.generate_all();
-            for (std::vector<int> & edges_in_cycle : array_edges_in_cycle) {
+            for (std::vector<int>& edges_in_cycle : array_edges_in_cycle) {
                 manager.local_step(edges_in_cycle);
                 // which vertex we will move;
                 if (manager.delta_cost <= 0 or swap_anyway(task, total_cost, manager.delta_cost)) {
