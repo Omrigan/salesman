@@ -30,7 +30,7 @@ int random(int a, int b) {
 }
 
 struct IterEdges {
-    IterEdges(const Solution * sol) : sol(sol) {};
+    IterEdges(const Solution* sol) : sol(sol) {};
     //  может либо возвращать рандомные ребра, либо сразу все, по которым надо пройтись
     std::vector<std::vector<int> > generate_all() {
         //  for local_solve only;
@@ -44,28 +44,30 @@ struct IterEdges {
         shuffle(tries.begin(), tries.end(), RandomGenerator::gen_rand);
         return tries;
     }
+
     vector<int> generate_k(int k) {
         int n = sol->sequence.size() - 1;
         vector<int> ar = {};
         for (int i = 0; i < k; i++) {
-            int a = ar.size() == 0 ? 0 : ar[ar.size() - 1];
+            int a = ar.size() == 0 ? 0 : ar.back();
             int b = n - 2 * (k - i);
             if (a >= b) {
                 cerr << "too small range for generate_k\n";
                 assert(a < b);
-            }else {
+            } else {
                 ar.push_back(random(a, b));
             }
         }
         return ar;
     }
-    const Solution * sol;
+
+    const Solution* sol;
 };
 
 struct LocalManager {
     LocalManager() = delete;
 
-    LocalManager(const Assignment* task_, Solution * sol_)
+    LocalManager(const Assignment* task_, Solution* sol_)
             : task(task_)
             , sol(sol_) {
     }
@@ -76,18 +78,18 @@ struct LocalManager {
         // edges_in_cycle: array of indices of edges to a vertex that is to be swaped.
         // works for k-opt.
         edges_in_cycle = std::move(edges_in_cycle_);
-        std::vector<std::pair<const Edge *, const Edge *> > chain, chain_new;
+        std::vector<std::pair<const Edge*, const Edge*> > chain, chain_new;
         chain_new.resize(edges_in_cycle.size(), {nullptr, nullptr});
         for (int g = 0; g < static_cast<int>(edges_in_cycle.size()); g++) {
             chain.push_back({sol->sequence[edges_in_cycle[g]], sol->sequence[edges_in_cycle[g] + 1]});
             assert(sol->sequence[edges_in_cycle[g]] != nullptr && sol->sequence[edges_in_cycle[g] + 1] != nullptr);
         }
         long long min_cost = COST_INF;
-        for (auto & triple : chain) {
+        for (auto& triple : chain) {
             delta_cost -= triple.first->cost + triple.second->cost;
         }
-        vector<Airport *> mids;
-        for (auto & triple : chain) {
+        vector<Airport*> mids;
+        for (auto& triple : chain) {
             mids.push_back(triple.first->to);
         }
         int need_to_solve = static_cast<int>(chain.size());
@@ -95,8 +97,8 @@ struct LocalManager {
             min_cost = COST_INF;
             int vid_next = (vid + 1) % static_cast<int>(chain.size());
             for (auto airp : task->zone_airports[mids[vid_next]->zone]) {
-                Edge *e1 = task->canfromto[edges_in_cycle[vid]][chain[vid].first->from->idx][airp->idx];
-                Edge *e2 = task->canfromto[edges_in_cycle[vid] + 1][airp->idx][chain[vid].second->to->idx];
+                Edge* e1 = task->canfromto[edges_in_cycle[vid]][chain[vid].first->from->idx][airp->idx];
+                Edge* e2 = task->canfromto[edges_in_cycle[vid] + 1][airp->idx][chain[vid].second->to->idx];
                 if (e1 != nullptr && e2 != nullptr) {
                     long long cost = e1->cost + e2->cost;
                     if (min_cost > cost) {
@@ -134,15 +136,15 @@ struct LocalManager {
     }
 
     vector<int> edges_in_cycle;
-    std::vector<std::pair<const Edge *, const Edge *> > chain_found;
+    std::vector<std::pair<const Edge*, const Edge*> > chain_found;
     const Assignment* task;
     int was_any_change_found = 0;
     long long delta_cost = 0;
     long long COST_INF = LLONG_MAX;
-    Solution * sol;
+    Solution* sol;
 };
 
-Solution solve_local_search_3v(Assignment *task, Solution sol) {
+Solution solve_local_search_3v(Assignment* task, Solution sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize
     const int MAX_ITER_INNER = 50;
@@ -186,7 +188,7 @@ Solution solve_local_search_3v(Assignment *task, Solution sol) {
     return sol;
 }
 
-Solution solve_local_search(Assignment *task, Solution sol) {
+Solution solve_local_search(Assignment* task, Solution sol) {
     sol.score();
     long long total_cost = sol.total_score; // want to minimize
     const int MAX_ITER_INNER = 50;
