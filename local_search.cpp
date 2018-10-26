@@ -231,6 +231,7 @@ Solution solve_local_search(Assignment* task, Solution sol) {
                     total_cost += manager.delta_cost;
                 }
             }
+            // we probably don't need this, it's scored just fine
             sol.score();
             if (sol.total_score < global_best_score) {
                 cerr << "CURRENT BEST GLOBAL SCORE " << sol.total_score << '\n';
@@ -243,3 +244,132 @@ Solution solve_local_search(Assignment* task, Solution sol) {
     sol.score();
     return sol;
 }
+
+vector<int> generate_k(int n, int k) {
+    assert(n >= 2 * k);
+    
+    int module = n - k;
+    set<int> distinct_indices;
+    for (int i = 0; i < k; ++i) {
+        int cur_num = RandomGenerator::get_rand_int() % module;
+        while (distinct_indices.count(cur_num)) {
+            cur_num = RandomGenerator::get_rand_int() % module;
+        }
+        distinct_indices.insert(cur_num);
+    }
+
+    vector<int> result;
+    copy(distinct_indices.begin(), distinct_indices.end(), back_inserter(result)); 
+    for (int i = 0; i < static_cast<int>(result.size()); ++i) {
+        result[i] += i;
+    }
+
+    return result;
+}
+
+struct ChainSwapper {
+    ~ChainSwapper();
+
+    void do_swap(Solution& sol) {
+        if (!found) {
+            return;
+        }
+        // swap sol edges
+        for (int vid = 0; vid < static_cast<int>(new_chain.size()); ++vid) {
+            assert(new_chain[vid].first != nullptr);
+            assert(new_chain[vid].second != nullptr);
+            sol.sequence[old_chain_indices[vid]] = new_chain[vid].first;
+            sol.sequence[old_chain_indices[vid] + 1] = new_chain[vid].second;
+        }
+        sol.total_score += delta_cost;
+    }
+
+    bool found = false;
+    long long delta_cost = 0;
+    long long total_cost = 0;
+    vector<int> old_chain_indices;
+    vector<pair<const Edge*, const Edge*>> new_chain;
+};
+
+ChainSwapper::~ChainSwapper() = default;
+
+ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vector<int> edges_in_cycle) {
+    // edges_in_cycle: array of indices of edges to a vertex that is to be swaped.
+    // works for k-opt.
+    ChainSwapper result_chain;
+    result_chain.total_cost = sol.total_score;
+
+    vector<pair<const Edge*, const Edge*>> chain, chain_new;
+    chain_new.resize(edges_in_cycle.size(), {nullptr, nullptr});
+    for (int g = 0; g < static_cast<int>(edges_in_cycle.size()); g++) {
+        chain.push_back({sol.sequence[edges_in_cycle[g]], sol.sequence[edges_in_cycle[g] + 1]});
+        assert(sol.sequence[edges_in_cycle[g]] != nullptr && sol.sequence[edges_in_cycle[g] + 1] != nullptr);
+    }
+    long long min_cost = LLONG_MAX;
+    for (auto& triple : chain) {
+        result_chain.delta_cost -= triple.first->cost + triple.second->cost;
+    }
+    vector<Airport*> mids;
+    for (auto& triple : chain) {
+        mids.push_back(triple.first->to);
+    }
+    int need_to_solve = static_cast<int>(chain.size());
+    for (int vid = 0; vid < static_cast<int>(chain.size()); ++vid) {
+        min_cost = LLONG_MAX;
+        int vid_next = (vid + 1) % static_cast<int>(chain.size());
+        for (auto airp : task->zone_airports[mids[vid_next]->zone]) {
+            Edge* e1 = task->canfromto[edges_in_cycle[vid]][chain[vid].first->from->idx][airp->idx];
+            Edge* e2 = task->canfromto[edges_in_cycle[vid] + 1][airp->idx][chain[vid].second->to->idx];
+            if (e1 != nullptr && e2 != nullptr) {
+                long long cost = e1->cost + e2->cost;
+                if (min_cost > cost) {
+                    min_cost = cost;
+                    chain_new[vid] = {e1, e2};
+                }
+            }
+        }
+        // possible enhancment: break if min_cost == LLONG_MAX
+        if (min_cost != LLONG_MAX)
+            need_to_solve--;
+        result_chain.delta_cost += min_cost;
+    }
+
+    // chain can't be built
+    if (need_to_solve > 0) {
+        result_chain.found = false;
+    } else {
+        result_chain.found = true;
+        result_chain.old_chain_indices = move(edges_in_cycle);
+        result_chain.new_chain = move(chain_new);
+    }
+
+    return result_chain;
+}
+
+Solution swap_chains_2v(Assignment* task, Solution sol) {
+    vector<int> edges_indices = generate_k(sol.sequence.size(), 2);
+    ChainSwapper chain_swapper = swap_chains_step(task, sol, move(edges_indices));
+
+    if (chain_swapper.delta_cost <= 0 or swap_anyway(task, chain_swapper.total_cost, chain_swapper.delta_cost)) {
+        chain_swapper.do_swap(sol);
+    }
+
+    return sol;
+}
+
+struct LocalOptimizeManager {
+    static vector<function<Solution(Assignment*, Solution)>> optimizations;
+
+    // we assume that sol is correctly scored
+    // before calling this
+    static Solution apply_random_optimization(Assignment* task, Solution sol) {
+        task->init_can_from_to();
+        auto func_optimize = optimizations[RandomGenerator::get_rand_int() % optimizations.size()];
+        sol = func_optimize(task, move(sol));
+        return func_optimize(task, move(sol));
+    }
+};
+
+vector<function<Solution(Assignment*, Solution)>> LocalOptimizeManager::optimizations = {
+    swap_chains_2v
+};

@@ -6,6 +6,7 @@
 #include "greedy.cpp" //nosubmit
 #include "local_search.cpp" //nosubmit
 
+// how fast is this? :thinking:
 mt19937_64 RandomGenerator::gen_rand(RandomGenerator::seed);
 uniform_int_distribution<> RandomGenerator::distr;
 uniform_int_distribution<long long> RandomGenerator::distr_long;
