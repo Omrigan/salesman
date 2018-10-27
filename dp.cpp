@@ -1,3 +1,5 @@
+#include "basic_structs.cpp" //nosubmit
+
 bool distance_cmp(int a, int b) {
     if (a == -1) {
         return false;
@@ -27,18 +29,21 @@ int max_size(const vector<vector<Airport*>>& v) {
     return max_size;
 }
 
-
-Solution dp_construct_solution_from(const Assignment* task, const vector<vector<const Edge*>> dp_restore, int local_idx) {
-    Solution solution(task);
-
-    int day = task->N;
+vector<const Edge*> get_solution_sequence(const vector<vector<const Edge*>> dp_restore, int local_idx, int day) {
+    vector<const Edge*> result;
     while (day > 0) {
         const Edge* cur_edge = dp_restore[day][local_idx];
-        solution.sequence.push_back(cur_edge);
+        result.push_back(cur_edge);
         local_idx = cur_edge->from->local_idx;
         --day;
     }
-    reverse(solution.sequence.begin(), solution.sequence.end());
+    reverse(result.begin(), result.end());
+    return result;
+}
+
+Solution dp_construct_solution_from(const Assignment* task, const vector<vector<const Edge*>> dp_restore, int local_idx) {
+    Solution solution(task);
+    solution.sequence = get_solution_sequence(dp_restore, local_idx, task->N);
     return solution;
 }
 
@@ -51,6 +56,7 @@ void recalc_dp(const Assignment* task,
                const int prev_zone,
                const int zone,
                const int day,
+               const int dp_day,
                bool& made_relaxation) {
     for (int airport_idx = 0; airport_idx < static_cast<int>(task->zone_airports[prev_zone].size()); ++airport_idx) {
         if (best_distance[0][airport_idx] != -1) {
@@ -62,7 +68,7 @@ void recalc_dp(const Assignment* task,
                     (best_distance[1][edge->to->local_idx] == -1 or
                     best_distance[1][edge->to->local_idx] > best_distance[0][edge->from->local_idx] + edge->cost)) {
                     best_distance[1][edge->to->local_idx] = best_distance[0][edge->from->local_idx] + edge->cost;
-                    dp_restore[day][edge->to->local_idx] = edge;
+                    dp_restore[dp_day][edge->to->local_idx] = edge;
                     made_relaxation = true;
                 }
             }
@@ -94,7 +100,7 @@ Solution fixed_zone_order_dp(const Assignment* task) {
 
         bool made_relaxation = false;
 
-        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, made_relaxation);
+        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, day, made_relaxation);
 
         if (!made_relaxation) {
             --reshuffle_attempts;
@@ -183,7 +189,7 @@ Solution dynamic_zone_order_dp(const Assignment* task) {
 
         bool made_relaxation = false;
 
-        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, made_relaxation);
+        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, day, made_relaxation);
 
         if (!made_relaxation) {
             return Solution();

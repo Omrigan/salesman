@@ -17,7 +17,9 @@
 
 using namespace std;
 
-#include "basic_structs.cpp"
+#include "basic_structs.cpp" //nosubmit
+#include "dp.cpp" //nosubmit
+
 bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
     if (task->use_random_swaps) {
         return total_cost / (10000 * static_cast<double>(delta_cost)) > RandomGenerator::get_rand_int() / static_cast<double>(__INT_MAX__);
@@ -364,6 +366,68 @@ Solution swap_chains_3v(Assignment* task, Solution sol) {
     return swap_chains(task, move(sol), 3);
 }
 
+Solution swap_adjacent_vertexes(Assignment* task, Solution sol) {
+    int sol_size = sol.sequence.size();
+    if (sol_size <= 3) return sol;
+    int v_ind_start = RandomGenerator::get_rand_int() % (sol_size - 3);
+    int max_v_ind_start = sol_size - 4;
+
+    const Edge* e1 = sol.sequence[v_ind_start];
+    const Edge* e2 = sol.sequence[v_ind_start + 1];
+    const Edge* e3 = sol.sequence[v_ind_start + 2];
+    
+    int max_zone_size = max_size(task->zone_airports);
+
+    vector<vector<int>> best_distance(2, vector<int>(max_zone_size, -1));
+    best_distance[0][e1->from->local_idx] = 0;
+
+    vector<vector<const Edge*>> dp_restore(4, vector<const Edge*>(max_zone_size, nullptr));
+
+    int prev_zone = e1->from->zone;
+    int day = v_ind_start + 1;
+    int dp_day = 1;
+
+    for (int zone : {e3->from->zone, e2->from->zone, e3->to->zone}) {
+        best_distance[1].assign(best_distance[1].size(), -1);
+
+        bool made_relaxation = false;
+
+        recalc_dp(task, best_distance, dp_restore, prev_zone, zone, day, dp_day, made_relaxation);
+
+        if (!made_relaxation) {
+            return sol;
+        }
+
+        ++day;
+        ++dp_day;
+        swap(best_distance[0], best_distance[1]);
+        prev_zone = zone;
+    }
+
+    vector<const Edge*> new_chain;
+    if (v_ind_start == max_v_ind_start) {
+        auto best_final_distance = min_element(best_distance[0].begin(), best_distance[0].end(), distance_cmp);
+        if (*best_final_distance == -1) return sol;
+        new_chain = get_solution_sequence(dp_restore, best_final_distance - best_distance[0].begin(), 3);
+    } else {
+        if (best_distance[0][e3->to->local_idx] == -1) return sol;
+        new_chain = get_solution_sequence(dp_restore, e3->to->local_idx, 3);
+    }
+
+    int delta_cost = accumulate(new_chain.begin(), new_chain.end(), 0, [](int sum, const Edge* a) { return a->cost + sum; }) 
+                     - (e1->cost + e2->cost + e3->cost);
+
+    if (delta_cost <= 0 or swap_anyway(task, sol.total_score, delta_cost)) {
+        int old_ind = v_ind_start;
+        for (const Edge* edge : new_chain) {
+            sol.sequence[old_ind] = move(edge);
+            ++old_ind;
+        }
+        sol.total_score += delta_cost;
+    }
+    return sol;
+}
+
 struct LocalOptimizeManager {
     static vector<function<Solution(Assignment*, Solution)>> optimizations;
 
@@ -373,11 +437,12 @@ struct LocalOptimizeManager {
         task->init_can_from_to();
         auto func_optimize = optimizations[RandomGenerator::get_rand_int() % optimizations.size()];
         sol = func_optimize(task, move(sol));
-        return func_optimize(task, move(sol));
+        return sol;
     }
 };
 
 vector<function<Solution(Assignment*, Solution)>> LocalOptimizeManager::optimizations = {
     swap_chains_2v,
     swap_chains_3v
+    // swap_adjacent_vertexes
 };
