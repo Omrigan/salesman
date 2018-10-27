@@ -23,7 +23,7 @@ namespace gen {
     int random(int a, int b) {
         if (b <= a)
             cerr << "INVALID ARGUMENT\n";
-        return RandomGenerator::gen_rand() % (b - a) + a;
+        return RandomGenerator::gen_rand_int() % (b - a) + a;
     }
 
     struct AirportName {
@@ -116,7 +116,7 @@ namespace gen {
             }
         }
         bool is_edge() {
-            return RandomGenerator::gen_rand() % MAX_PROB < prob;
+            return RandomGenerator::get_rand_int() % MAX_PROB < prob;
         }
     };
 
