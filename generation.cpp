@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <cmath>
 
 #include "basic_structs.cpp"
 
@@ -22,7 +23,7 @@ namespace gen {
     int random(int a, int b) {
         if (b <= a)
             cerr << "INVALID ARGUMENT\n";
-        return RandomGenerator::get_rand_int() % (b - a) + a;
+        return RandomGenerator::gen_rand_int() % (b - a) + a;
     }
 
     struct AirportName {
@@ -154,6 +155,15 @@ namespace gen {
         std::cout.rdbuf(coutbuf); //reset to standard output again
 
     }
+    void save_test_eucledean(string name, Params * param, vector<Airport> * airports, vector<Edge> & edges, vector<vector<pair<Airport *, pair<long long, long long> > > > & abr) {
+        vector<vector<Airport *> > abr_(abr.size());
+        for (int i = 0; i < abr.size(); i++) {
+            for (int j = 0; j < abr[i].size(); j++) {
+                abr_[i].push_back(abr[i][j].first);
+            }
+        }
+        save_test(name, param, airports, edges, abr_);
+    }
     string join(vector<string> inp) {
         string s = "";
         for (string & sub : inp) {
@@ -275,34 +285,148 @@ namespace gen {
         }
         save_test(name, param, &airports, edges, air_by_region);
     }
+
+    long long dist(pair<long long, long long> & a, pair<long long, long long> & b) {
+        return (long long)std::sqrt((a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second));
+    }
+    void gen_eucledian(Params * param) {
+        //
+        // граф с неравенством треугольника
+        //
+        string name = param->path + join(param->specific) + param->sz_type + ".in";
+        std::vector<Airport> airports;
+        airports.reserve(param->NA + 10);
+        std::vector<Edge> edges;
+        vector<vector<pair<Airport *, pair<long long, long long> > > > air_by_region(param->N);
+        const int MINP = -1000;
+        const int MAXP = 1000;
+
+        for (int idx = 0; idx < param->NA; idx++) {
+            int zone;
+            if (idx < param->N) {
+                zone = idx;
+            } else {
+                zone = random(0, param->N);
+            }
+            // cout << zone << '\n';
+            airports.push_back({idx, zone});
+            // cout << "idx " << airports[idx].idx << '\n';
+            air_by_region[zone].push_back({&(airports[idx]), {random(MINP, MAXP), random(MINP, MAXP)}});
+        }
+        // maybe random shuffle
+
+        for (int time = param->min_time; time <= param->max_time; time++) {
+            for (int i = 0; i < param->N; i++) {
+                for (int j = 0; j < param->N; j++) {
+                    if (j == i)
+                        continue;
+                    for (int a1 = 0; a1 < air_by_region[i].size(); a1++) {
+                        for (int a2 = 0; a2 < air_by_region[j].size(); a2++) {
+                            if (param->is_edge()) {
+                                edges.push_back({air_by_region[i][a1].first, air_by_region[i][a1].first, time,
+                                                 (int)dist(air_by_region[i][a1].second, air_by_region[i][a1].second)});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        save_test_eucledean(name, param, &airports, edges, air_by_region);
+    }
 }
 
 void simple_generate() {
     // ---------------
     // regular
+    {
     gen::Params param_regular { .sz_type = "large", .prob = 40, .specific={"regular"} };
     param_regular.init();
     gen::gen_simple(&param_regular);
+    }
     // ---------------
     // not regular
-    gen::Params param_without_regular { .sz_type = "large", .prob = 20, .specific={"not_regular_only"} };
-    param_without_regular.init();
-    gen::gen_simple(&param_without_regular);
+    {
+        gen::Params param_without_regular{.sz_type = "large", .prob = 20, .specific={"not_regular_only",  "p20"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    {
+        gen::Params param_without_regular{.sz_type = "large", .prob = 40, .specific={"not_regular_only",  "p40"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    {
+        gen::Params param_without_regular{.sz_type = "large", .prob = 80, .specific={"not_regular_only",  "p80"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
     // ---------------
     // честный коммивояжер
-    gen::Params param_fair_salesman { .sz_type = "large", .prob = 50, .specific={"fair_salesman"} };
-    param_fair_salesman.init();
-    gen::gen_simple(&param_fair_salesman);
+    {
+        gen::Params param_fair_salesman{.sz_type = "large", .prob = 50, .specific={"fair_salesman",  "p50"}};
+        param_fair_salesman.init();
+        gen::gen_simple(&param_fair_salesman);
+    }
+    {
+        gen::Params param_fair_salesman{.sz_type = "large", .prob = 70, .specific={"fair_salesman", "p70"}};
+        param_fair_salesman.init();
+        gen::gen_simple(&param_fair_salesman);
+    }
+
+    {
+        gen::Params param_without_regular{.sz_type = "medium", .prob = 20, .specific={"not_regular_only",  "p20"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    {
+        gen::Params param_without_regular{.sz_type = "medium", .prob = 40, .specific={"not_regular_only",  "p40"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    {
+        gen::Params param_without_regular{.sz_type = "medium", .prob = 80, .specific={"not_regular_only",  "p80"}};
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    // ---------------
+    // честный коммивояжер
+    {
+        gen::Params param_fair_salesman{.sz_type = "medium", .prob = 50, .specific={"fair_salesman",  "p50"}};
+        param_fair_salesman.init();
+        gen::gen_simple(&param_fair_salesman);
+    }
+    {
+        gen::Params param_fair_salesman{.sz_type = "medium", .prob = 70, .specific={"fair_salesman", "p70"}};
+        param_fair_salesman.init();
+        gen::gen_simple(&param_fair_salesman);
+    }
     // ---------------
     // just один цикл. (возможно интереснее добавить шумовых ребер)
-    gen::Params param_one_cicle { .sz_type = "large", .specific={"one_cicle"} };
-    param_one_cicle.init();
-    gen::gen_cicle(&param_one_cicle);
+    // gen::Params param_one_cicle { .sz_type = "large", .specific={"one_cicle"} }
+    //param_one_cicle.init();
+    // gen::gen_cicle(&param_one_cicle);
     // ---------------
     // колесо
     gen::Params param_whirl { .sz_type = "large", .specific={"whirl"} };
     param_whirl.init();
     gen::gen_whirl(&param_whirl);
+    // eucledian
+    gen::Params param_eucledean { .sz_type = "large", .specific={"eucledian"} };
+    param_eucledean.init();
+    gen::gen_eucledian(&param_eucledean);
+    // eucledian2
+    gen::Params param_eucledean1 { .sz_type = "large", .specific={"eucledian", "not_regular_only"} };
+    param_eucledean1.init();
+    gen::gen_eucledian(&param_eucledean1);
+    // eucledian3
+    gen::Params param_eucledean3 { .sz_type = "large", .specific={"eucledian", "regular"} };
+    param_eucledean3.init();
+    gen::gen_eucledian(&param_eucledean3);
+    // eucledian3
+    gen::Params param_eucledean4 { .sz_type = "large", .specific={"eucledian", "fair_salesman"} };
+    param_eucledean4.init();
+    gen::gen_eucledian(&param_eucledean4);
+
 }
 
 int main() {
