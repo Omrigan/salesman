@@ -91,10 +91,6 @@ long long RandomGenerator::get_rand_int64() {
 struct Assignment {
     Assignment() = default;
 
-    // compiler says that it's better not to inline destructor
-    // ¯\_(ツ)_/¯
-    ~Assignment();
-
     Time start_time = Clock::now();
     Time finish_time = Clock::now();
     int64_t start_time_long = 0;
@@ -236,8 +232,6 @@ struct Assignment {
         return Clock::now() > finish_time;
     }
 };
-
-Assignment::~Assignment() = default;
 
 struct Solution {
     Solution() = default;

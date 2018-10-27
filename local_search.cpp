@@ -270,8 +270,6 @@ vector<int> generate_k(int n, int k) {
 }
 
 struct ChainSwapper {
-    ~ChainSwapper();
-
     void do_swap(Solution& sol) {
         if (!found) {
             return;
@@ -292,8 +290,6 @@ struct ChainSwapper {
     vector<int> old_chain_indices;
     vector<pair<const Edge*, const Edge*>> new_chain;
 };
-
-ChainSwapper::~ChainSwapper() = default;
 
 ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vector<int> edges_in_cycle) {
     // edges_in_cycle: array of indices of edges to a vertex that is to be swaped.

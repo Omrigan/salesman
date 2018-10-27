@@ -6,7 +6,7 @@ build-scoring:
 	g++ -O2 scoring/scoring.cpp --std=c++17 -o score
 
 debug:
-	g++ -std=c++14 -DDEBUG -pthread -O0 main.cpp -o main -Wall -Wextra -Winline -Wshadow -g
+	g++ -std=c++14 -DDEBUG -pthread -O0 main.cpp -o main -Wall -Wextra -Winline -Wshadow -g -Wno-inline
 
 # Run
 run: build
