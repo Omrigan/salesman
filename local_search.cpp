@@ -347,8 +347,7 @@ ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vecto
     return result_chain;
 }
 
-Solution swap_chains(Assignment* task, Solution sol, int k) {
-    vector<int> edges_indices = generate_k(sol.sequence.size(), k);
+Solution swap_chains(Assignment* task, Solution sol, vector<int> edges_indices) {
     ChainSwapper chain_swapper = swap_chains_step(task, sol, move(edges_indices));
 
     if (chain_swapper.delta_cost <= 0 or swap_anyway(task, chain_swapper.total_cost, chain_swapper.delta_cost)) {
@@ -359,11 +358,27 @@ Solution swap_chains(Assignment* task, Solution sol, int k) {
 }
 
 Solution swap_chains_2v(Assignment* task, Solution sol) {
-    return swap_chains(task, move(sol), 2);
+    return swap_chains(task, move(sol), generate_k(sol.sequence.size(), 2));
 }
 
 Solution swap_chains_3v(Assignment* task, Solution sol) {
-    return swap_chains(task, move(sol), 3);
+    return swap_chains(task, move(sol), generate_k(sol.sequence.size(), 3));
+}
+
+Solution apply_all_swaps_2v(Assignment* task, Solution sol) {
+    int n = sol.sequence.size();
+    vector<vector<int>> all_indices;
+    all_indices.reserve(n * n);
+    for (int v = 0; v < n - 3; ++v) {
+        for (int u = v + 2; u < n - 1; ++u) {
+            all_indices.push_back({ v, u });
+        }
+    }
+    shuffle(all_indices.begin(), all_indices.end(), RandomGenerator::gen_rand);
+    for (vector<int>& v_ind : all_indices) {
+        sol = swap_chains(task, move(sol), move(v_ind));
+    }
+    return sol;
 }
 
 Solution swap_adjacent_vertexes(Assignment* task, Solution sol) {
@@ -434,8 +449,10 @@ struct LocalOptimizeManager {
     // we assume that sol is correctly scored
     // before calling this
     static Solution apply_random_optimization(Assignment* task, Solution sol) {
+        double n = static_cast<double>(sol.sequence.size());
+        discrete_distribution<int> distribution = { n, n, 1 };
         task->init_can_from_to();
-        auto func_optimize = optimizations[RandomGenerator::get_rand_int() % optimizations.size()];
+        auto func_optimize = optimizations[distribution(RandomGenerator::gen_rand)];
         sol = func_optimize(task, move(sol));
         return sol;
     }
@@ -443,6 +460,7 @@ struct LocalOptimizeManager {
 
 vector<function<Solution(Assignment*, Solution)>> LocalOptimizeManager::optimizations = {
     swap_chains_2v,
-    swap_chains_3v
+    swap_chains_3v,
+    apply_all_swaps_2v
     // swap_adjacent_vertexes
 };

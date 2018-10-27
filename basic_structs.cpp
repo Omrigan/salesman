@@ -114,7 +114,8 @@ struct Assignment {
     bool use_random_swaps = false;
     // modify this!
     int margin = 5;
-    double greedy_solution_runtime = 1.5;
+    // the bigger this value is, the longer local optimizations run
+    double greedy_solution_runtime = 2;
 
     void init_time() {
         start_time = Clock::now();
