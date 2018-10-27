@@ -150,7 +150,7 @@ struct Assignment {
                     }
                 }
             } else if (canfromto[edge.day][edge.from->idx][edge.to->idx] == nullptr or
-                        canfromto[edge.day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
+                       canfromto[edge.day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
                 canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
             }
         }

@@ -108,8 +108,8 @@ struct LocalManager {
             min_cost = COST_INF;
             int vid_next = (vid + 1) % static_cast<int>(chain.size());
             for (auto airp : task->zone_airports[mids[vid_next]->zone]) {
-                Edge* e1 = task->canfromto[edges_in_cycle[vid]][chain[vid].first->from->idx][airp->idx];
-                Edge* e2 = task->canfromto[edges_in_cycle[vid] + 1][airp->idx][chain[vid].second->to->idx];
+                Edge* e1 = task->canfromto[edges_in_cycle[vid] + 1][chain[vid].first->from->idx][airp->idx];
+                Edge* e2 = task->canfromto[edges_in_cycle[vid] + 2][airp->idx][chain[vid].second->to->idx];
                 if (e1 != nullptr && e2 != nullptr) {
                     long long cost = e1->cost + e2->cost;
                     if (min_cost > cost) {
@@ -320,8 +320,8 @@ ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vecto
         min_cost = LLONG_MAX;
         int vid_next = (vid + 1) % static_cast<int>(chain.size());
         for (auto airp : task->zone_airports[mids[vid_next]->zone]) {
-            Edge* e1 = task->canfromto[edges_in_cycle[vid]][chain[vid].first->from->idx][airp->idx];
-            Edge* e2 = task->canfromto[edges_in_cycle[vid] + 1][airp->idx][chain[vid].second->to->idx];
+            Edge* e1 = task->canfromto[edges_in_cycle[vid] + 1][chain[vid].first->from->idx][airp->idx];
+            Edge* e2 = task->canfromto[edges_in_cycle[vid] + 2][airp->idx][chain[vid].second->to->idx];
             if (e1 != nullptr && e2 != nullptr) {
                 long long cost = e1->cost + e2->cost;
                 if (min_cost > cost) {

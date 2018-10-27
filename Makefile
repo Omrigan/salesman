@@ -45,5 +45,5 @@ download:
 	wget https://problems.sphere-engine.com/problems/TSALESMAN2/resources/get/4.in -O public/4.in
 
 submit:
-	cat basic_structs.cpp run.cpp local_search.cpp dp.cpp greedy.cpp main.cpp | grep -v nosubmit > submit.cpp
+	cat basic_structs.cpp run.cpp dp.cpp local_search.cpp greedy.cpp newmain.cpp main.cpp | grep -v nosubmit > submit.cpp
 	cat submit.cpp | xsel -b
