@@ -328,9 +328,8 @@ ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vecto
                 }
             }
         }
-        // possible enhancment: break if min_cost == LLONG_MAX
-        if (min_cost != LLONG_MAX)
-            need_to_solve--;
+        if (min_cost == LLONG_MAX) break;
+        --need_to_solve;
         result_chain.delta_cost += min_cost;
     }
 

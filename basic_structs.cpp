@@ -130,9 +130,13 @@ struct Assignment {
         for (Edge& edge : edges) {
             if (edge.day == 0) {
                 for (int day = 1; day <= MAX_TIME; day++) {
-                    canfromto[day][edge.from->idx][edge.to->idx] = &edge;
+                    if (canfromto[day][edge.from->idx][edge.to->idx] == nullptr or
+                        canfromto[day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
+                        canfromto[day][edge.from->idx][edge.to->idx] = &edge;
+                    }
                 }
-            } else {
+            } else if (canfromto[edge.day][edge.from->idx][edge.to->idx] == nullptr or
+                        canfromto[edge.day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
                 canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
             }
         }
@@ -237,6 +241,7 @@ struct Solution {
             if (!correct) {
                 return;
             }
+            assert(sequence.front()->from->fast_eq(task->start));
             for(int i = 0; i < static_cast<int>(sequence.size()); ++i) {
                 if (i != 0) {
                     assert(sequence[i - 1]->to->fast_eq(sequence[i]->from));
