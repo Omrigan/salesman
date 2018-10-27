@@ -44,6 +44,10 @@ struct Airport {
         , zone(zone_)
         , local_idx(local_idx_) {}
 
+    bool fast_eq(const Airport* other) {
+        return idx == other->idx and zone == other->zone and local_idx == other->local_idx;
+    }
+
     int idx, zone;
     int local_idx;
     vector<Edge*> edges_from;
@@ -233,8 +237,11 @@ struct Solution {
             if (!correct) {
                 return;
             }
-            for(const Edge* x : sequence) {
-                total_score += x->cost;
+            for(int i = 0; i < static_cast<int>(sequence.size()); ++i) {
+                if (i != 0) {
+                    assert(sequence[i - 1]->to->fast_eq(sequence[i]->from));
+                }
+                total_score += sequence[i]->cost;
             }
         }
     }
