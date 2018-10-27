@@ -83,8 +83,6 @@ struct LocalManager {
 
     LocalManager(const LocalManager& other) = default;
 
-    ~LocalManager();
-
     void local_step(vector<int> edges_in_cycle_) {
         // edges_in_cycle: array of indices of edges to a vertex that is to be swaped.
         // works for k-opt.
@@ -154,8 +152,6 @@ struct LocalManager {
     long long COST_INF = LLONG_MAX;
     Solution* sol;
 };
-
-LocalManager::~LocalManager() = default;
 
 Solution solve_local_search_3v(Assignment* task, Solution sol) {
     sol.score();
