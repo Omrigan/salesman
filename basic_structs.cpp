@@ -65,7 +65,7 @@ struct Edge {
 };
 
 struct RandomGenerator {
-    constexpr static int seed = 1357908642;
+    static int seed;
     static mt19937_64 gen_rand;
     static std::uniform_int_distribution<> distr;
     static std::uniform_int_distribution<long long> distr_long;
@@ -73,6 +73,20 @@ struct RandomGenerator {
     static int get_rand_int();
     static long long get_rand_int64();
 };
+
+// how fast is this? :thinking:
+int RandomGenerator::seed = 1357908642;
+mt19937_64 RandomGenerator::gen_rand(RandomGenerator::seed);
+uniform_int_distribution<> RandomGenerator::distr;
+uniform_int_distribution<long long> RandomGenerator::distr_long;
+
+int RandomGenerator::get_rand_int() {
+    return RandomGenerator::distr(RandomGenerator::gen_rand);
+}
+
+long long RandomGenerator::get_rand_int64() {
+    return RandomGenerator::distr_long(RandomGenerator::gen_rand);
+}
 
 struct Assignment {
     Assignment() = default;

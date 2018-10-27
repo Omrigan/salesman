@@ -6,19 +6,6 @@
 #include "greedy.cpp" //nosubmit
 #include "local_search.cpp" //nosubmit
 
-// how fast is this? :thinking:
-mt19937_64 RandomGenerator::gen_rand(RandomGenerator::seed);
-uniform_int_distribution<> RandomGenerator::distr;
-uniform_int_distribution<long long> RandomGenerator::distr_long;
-
-int RandomGenerator::get_rand_int() {
-    return RandomGenerator::distr(RandomGenerator::gen_rand);
-}
-
-long long RandomGenerator::get_rand_int64() {
-    return RandomGenerator::distr_long(RandomGenerator::gen_rand);
-}
-
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;
