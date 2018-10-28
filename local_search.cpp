@@ -20,9 +20,15 @@ using namespace std;
 #include "basic_structs.cpp" //nosubmit
 #include "dp.cpp" //nosubmit
 
+double get_temp(const Assignment* task) {
+    double time_elapsed = double(get_time_in_ms(Clock::now()) - task->start_time_long) / task->time_to_live;
+    return 1 - time_elapsed;
+}
+
 bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
     if (task->use_random_swaps) {
-        return total_cost / (10000 * static_cast<double>(delta_cost)) > RandomGenerator::get_rand_int() / static_cast<double>(__INT_MAX__);
+        double temp = get_temp(task);
+        return temp * (total_cost / (10000 * static_cast<double>(delta_cost))) > RandomGenerator::get_rand_prob();
     }
     return false;
 }
