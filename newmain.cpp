@@ -19,6 +19,10 @@ long long RandomGenerator::get_rand_int64() {
     return RandomGenerator::distr_long(RandomGenerator::gen_rand);
 }
 
+double RandomGenerator::get_rand_prob() {
+    return RandomGenerator::distr_double(RandomGenerator::gen_rand);
+}
+
 using Clock = chrono::steady_clock;
 using Microseconds = chrono::microseconds;
 using Time = Clock::time_point;

@@ -65,9 +65,12 @@ struct RandomGenerator {
     static mt19937_64 gen_rand;
     static std::uniform_int_distribution<> distr;
     static std::uniform_int_distribution<long long> distr_long;
+    static std::uniform_real_distribution<double> distr_double(0, 1);
 
     static int get_rand_int();
     static long long get_rand_int64();
+
+    static double get_rand_prob();
 };
 
 struct Assignment {
@@ -79,6 +82,7 @@ struct Assignment {
 
     Time start_time = Clock::now();
     Time finish_time = Clock::now();
+    size_t time_to_live = 0;
     int64_t start_time_long = 0;
     int64_t finish_time_long = 0;
     int kind = -1; // 0 - small, 1 - medium, 2 - large
@@ -103,14 +107,16 @@ struct Assignment {
 
         if (N <= 20) { 
             kind = 1;
-            finish_time = start_time + std::chrono::milliseconds(2700);
+            time_to_live = 2700;
+            
         } else if (N <= 100) {
             kind = 2;
-            finish_time = start_time + std::chrono::milliseconds(4700);
+            time_to_live = 4700;
         } else {
             kind = 3;
-            finish_time = start_time + std::chrono::milliseconds(14000);
+            time_to_live = 14000;
         }
+        finish_time = start_time + std::chrono::milliseconds(time_to_live);
 
         start_time_long = get_time_in_ms(start_time);
         finish_time_long = get_time_in_ms(finish_time);
