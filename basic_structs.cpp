@@ -122,6 +122,9 @@ struct Assignment {
     // the bigger this value is, the longer local optimizations run
     double greedy_solution_runtime = 2;
 
+    double least_visited_edge_prob = 0.01;
+    double weighted_random = 0.5;
+
     void init_time() {
         start_time = Clock::now();
 

@@ -210,10 +210,14 @@ vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
 
         Edge const* next_edge;
         // we can try 'get_least_visited_edge' here
-        if (RandomGenerator::get_rand_int() % 2) {
-            next_edge = get_next_edge_random(mngr); 
+        if (RandomGenerator::get_rand_prob() > mngr->task->least_visited_edge_prob) {
+            if (RandomGenerator::get_rand_prob() > mngr->task->weighted_random) {
+                next_edge = get_next_edge_random(mngr); 
+            } else {
+                next_edge = get_next_edge_weighted(mngr);
+            }
         } else {
-            next_edge = get_next_edge_weighted(mngr);
+            next_edge = get_least_visited_edge(mngr);
         }
 
         if (next_edge == nullptr) {
