@@ -102,13 +102,13 @@ namespace gen {
         void init() {
             if (sz_type == "very_small") {
                 N = random(3, 5);
-                NA = random(N, 10);
+                NA = random(N + 10, 50);
             } else if (sz_type == "small") {
                 N = random(3, 11);
-                NA = random(N, 50);
+                NA = random(N + 5, 50);
             } else if (sz_type == "medium") {
                 N = random(11, 101);
-                NA = random(N, 200);
+                NA = random(N + 10, 200);
             } else if (sz_type == "large") {
                 N = random(101, 300);
                 N = random(N, 301);
@@ -333,8 +333,8 @@ namespace gen {
                     for (int a1 = 0; a1 < air_by_region[i].size(); a1++) {
                         for (int a2 = 0; a2 < air_by_region[j].size(); a2++) {
                             if (param->is_edge()) {
-                                edges.push_back({air_by_region[i][a1].first, air_by_region[i][a1].first, time,
-                                                 (int)dist(air_by_region[i][a1].second, air_by_region[i][a1].second)});
+                                edges.push_back({air_by_region[i][a1].first, air_by_region[j][a2].first, time,
+                                                 (int)dist(air_by_region[i][a1].second, air_by_region[j][a2].second)});
                             }
                         }
                     }
