@@ -124,6 +124,7 @@ struct Assignment {
 
     double least_visited_edge_prob = 0.01;
     double weighted_random = 0.5;
+    int number_of_considered_solutions = 1;
 
     void init_time() {
         start_time = Clock::now();

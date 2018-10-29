@@ -50,42 +50,89 @@ Solution run_main(function<Solution(Assignment*)> original,
 Solution run_multiple_solutions(function<Solution(Assignment*)> first_solution,
                                 function<Solution(Assignment*, Solution)> second_solution,
                                 Assignment* task) {
-    Solution best = first_solution(task);
-    best.score();
+    Solution best_solution = first_solution(task);
+    best_solution.score();
+
+    vector<Solution> solutions(task->number_of_considered_solutions);
+    solutions[0] = best_solution;
+
+    int all_runs = 0;
+    int successful_runs = 0;
+    
     while (true) {
         Solution temp = first_solution(task);
         temp.score();
-        if (temp.correct and (!best.correct or temp.total_score < best.total_score)) {
-            if (best.correct) cerr << "Improvement from "  << best.total_score << " to " << temp.total_score << endl;
-            else cerr << "Solution found!" << endl;
-            best = move(temp); 
+        ++all_runs;
+        successful_runs += temp.correct;
+
+        if (temp.correct) {
+            int worst_index = -1;
+            for (int i = 0; i < task->number_of_considered_solutions; ++i) {
+                if (!solutions[i].correct or solutions[i].total_score > temp.total_score) {
+                    if (worst_index == -1 or
+                        !solutions[i].correct or 
+                        (solutions[worst_index].total_score < solutions[i].total_score and
+                        solutions[worst_index].correct)) {
+                        worst_index = i;
+                    }
+                }
+            }
+            if (worst_index != -1) {
+                solutions[RandomGenerator::get_rand_int() % task->number_of_considered_solutions] = temp;
+                if (!best_solution.correct or temp.total_score < best_solution.total_score) {
+                    if (best_solution.correct) cerr << "Improvement from "  << best_solution.total_score << " to " << temp.total_score << endl;
+                    else cerr << "Solution found! It scored " << temp.total_score << endl;
+                    best_solution = move(temp); 
+                }
+            }
         }
+
         int64_t now_ms_long = get_time_in_ms(Clock::now());
         if ((now_ms_long - task->start_time_long) * task->greedy_solution_runtime > (task->finish_time_long - task->start_time_long)) {
             break;
         }
     }
 
-    if (!best.correct) {
+    cerr << "~~~~~~~~~~~~~~~" << endl;
+    for (Solution& solution : solutions) {
+        cerr << solution.total_score << endl;
+    }
+    cerr << "~~~~~~~~~~~~~~~" << endl;
+
+    cerr << "Total number of runs: " << all_runs << endl;
+    cerr << "Successful number of runs: " << successful_runs << endl;
+    cerr << "Successful runs ratio: " << successful_runs / static_cast<double>(all_runs) << endl;
+
+    if (!best_solution.correct) {
         cerr << "FIRST SOLUTION FOUND NO CORRECT PATH!" << endl;
+    } else {
+        cerr << "Score before local solve: " << best_solution.total_score << endl;
     }
 
-    cerr << "Score before local solve: " << best.total_score << endl;
-
-    Solution tmp_solution = best;
-
     while (true) {
-        tmp_solution = second_solution(task, move(tmp_solution));
-        if (tmp_solution.correct and (!best.correct or tmp_solution.total_score < best.total_score)) {
-            cerr << "Improvement from "  << best.total_score << " to " << tmp_solution.total_score << endl;
-            best = tmp_solution;
+        for (Solution& solution : solutions) {
+            solution = second_solution(task, move(solution));
+            if (solution.correct and (!best_solution.correct or solution.total_score < best_solution.total_score)) {
+                if (best_solution.correct) cerr << "Improvement from "  << best_solution.total_score << " to " << solution.total_score << endl;
+                else cerr << "Solution found! It scored " << solution.total_score << endl;
+                best_solution = solution;
+            }
+            if (task->ready_to_stop()) {
+               break;
+            }
         }
         if (task->ready_to_stop()) {
             break;
         }
     }
 
-    return best;
+    cerr << "~~~~~~~~~~~~~~~" << endl;
+    for (Solution& solution : solutions) {
+        cerr << solution.total_score << endl;
+    }
+    cerr << "~~~~~~~~~~~~~~~" << endl;
+
+    return best_solution;
 }
 
 Solution run_binary_search_on_edges(function<Solution(Assignment*)> original, Assignment* task) {
