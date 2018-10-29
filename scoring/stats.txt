@@ -1,4 +1,4 @@
-5
+6
 greedy_local_search_3opt 24
 1.in 1396
 2.in 9370
@@ -74,6 +74,32 @@ not_regular_only_p40_medium.in 23849
 not_regular_only_p80_large.in 0
 not_regular_only_p80_medium.in 15430
 regular_large.in 111600
+regular_very_small.in 4566
+whirl_large.in 1.23918e+06
+
+new_max_edge_index 24
+1.in 1396
+2.in 5091
+3.in 42980
+4.in 116930
+eucledian_fair_salesman_large.in 41938
+eucledian_large.in 42870
+eucledian_not_regular_only_large.in -1
+eucledian_regular_large.in 59413
+eucledian_very_small.in 1192
+fair_salesman_p50_large.in 42129
+fair_salesman_p50_medium.in 37698
+fair_salesman_p50_very_small.in 24601
+fair_salesman_p70_large.in 39832
+fair_salesman_p70_medium.in 11079
+not_regular_only_p20_large.in -1
+not_regular_only_p20_medium.in 97190
+not_regular_only_p20_very_small.in 8923
+not_regular_only_p40_large.in 81200
+not_regular_only_p40_medium.in 23849
+not_regular_only_p80_large.in -1
+not_regular_only_p80_medium.in 15430
+regular_large.in 108096
 regular_very_small.in 4566
 whirl_large.in 1.23918e+06
 
