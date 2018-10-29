@@ -216,7 +216,7 @@ struct Assignment {
                 break;
             }
         }
-
+    
         long long current_time = get_time_in_ms(Clock::now());
 
         cerr << "Input read in "

@@ -47,3 +47,8 @@ download:
 submit:
 	cat basic_structs.cpp run.cpp dp.cpp local_search.cpp greedy.cpp newmain.cpp main.cpp | grep -v nosubmit > submit.cpp
 	cat submit.cpp | xsel -b
+
+profile:
+	g++ -pg main.cpp -O2 -std=c++14 -DDEBUG  -o main  # -fsanitize=undefined  -fsanitize=leak -fsanitize=null -pthread -Wall -Wextra  -Wshadow
+	cat public/3.in |./main
+	gprof ./main > profile
