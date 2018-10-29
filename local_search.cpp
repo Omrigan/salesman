@@ -30,7 +30,7 @@ bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
     if (task->use_random_swaps) {
         double temp = get_temp(task);
         double prob;
-        assert(total_cost>0);
+        // assert(total_cost>0);
         if(!task->use_experimental_temp){
             prob =  temp * (total_cost / (10000 * static_cast<double>(delta_cost))); 
         } else{

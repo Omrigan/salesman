@@ -52,6 +52,8 @@ struct Airport {
     int local_idx;
     vector<Edge*> edges_from;
     vector<vector<const Edge*>> edges_from_by_day;
+
+    vector<vector<unordered_map<int, bool>>> edges_from_by_day_by_target;
 };
 
 struct Edge {
@@ -153,20 +155,7 @@ struct Assignment {
         if (canfromto.size() != 0) {
             return;
         }
-        canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge* > > (MAX_AIRPORT, std::vector<Edge* > (MAX_AIRPORT, nullptr)));
-        for (Edge& edge : edges) {
-            if (edge.day == 0) {
-                for (int day = 1; day <= MAX_TIME; day++) {
-                    if (canfromto[day][edge.from->idx][edge.to->idx] == nullptr or
-                        canfromto[day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
-                        canfromto[day][edge.from->idx][edge.to->idx] = &edge;
-                    }
-                }
-            } else if (canfromto[edge.day][edge.from->idx][edge.to->idx] == nullptr or
-                       canfromto[edge.day][edge.from->idx][edge.to->idx]->cost > edge.cost) {
-                canfromto[edge.day][edge.from->idx][edge.to->idx] = &edge;
-            }
-        }
+       
     }
 
     void read_data() {
@@ -201,20 +190,59 @@ struct Assignment {
 
         cerr << "Airports read" << endl;
         start = &airports[airport_name_to_idx[start_airport_str]];
+         for (Airport& airport : airports) {	
+            airport.edges_from_by_day.resize(N + 1);	
+        }
+
+
+        canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge* > > (MAX_AIRPORT, std::vector<Edge* > (MAX_AIRPORT, nullptr)));
+
         while(!cin.eof()) {
             string from, to;
             int day, cost;
             cin >> from >> to >> day >> cost;
-            edges.push_back({
-                &airports[airport_name_to_idx[from]],
-                &airports[airport_name_to_idx[to]],
-                day,
-                cost}
-            );
+            int from_idx = airports[airport_name_to_idx[from]].idx; 
+
+            int to_idx = airports[airport_name_to_idx[from]].idx;
+
+            Edge* ptr = nullptr;
+           
+            if (day == 0) {
+                for (int newday = 1; day <= MAX_TIME; day++) {
+                    if (canfromto[newday][from_idx][to_idx] == nullptr or
+                        canfromto[newday][from_idx][to_idx]->cost > cost) {
+                        if(ptr==nullptr){
+                            edges.push_back({&airports[from_idx], &airports[to_idx], newday, cost});
+                            ptr = &edges[edges.size()-1];
+                        }
+                        canfromto[newday][from_idx][to_idx] = ptr;
+                    }
+                }
+            } else if (canfromto[day][from_idx][to_idx] == nullptr or
+                       canfromto[day][from_idx][to_idx]->cost > cost) {
+                if(ptr==nullptr){
+                    edges.push_back({&airports[from_idx], &airports[to_idx], day, cost});
+                    ptr = &edges[edges.size()-1];
+                }
+                canfromto[day][from_idx][to_idx] = ptr;
+            }
+            if(ptr!=nullptr){
+                ptr->from->edges_from.push_back(ptr);
+                ptr->from->edges_from_by_day[ptr->day].push_back(ptr);   
+            }
+        
 
             if ((get_time_in_ms(Clock::now()) - start_time_long) * 3 > finish_time_long - start_time_long) {
                 break;
             }
+        }
+
+        for (Airport& airport : airports) {	
+            for (vector<const Edge*>& airport_edges : airport.edges_from_by_day) {	
+                stable_sort(airport_edges.begin(), airport_edges.end(), [](const Edge* a, const Edge* b) {	
+                    return a->cost < b->cost;	
+                });
+            }	
         }
     
         long long current_time = get_time_in_ms(Clock::now());
@@ -226,22 +254,7 @@ struct Assignment {
     }
 
     void init_edges() {
-        for (Airport& airport : airports) {	
-            airport.edges_from_by_day.resize(N + 1);	
-        }
-
-        for (int i = 0; i < static_cast<int>(edges.size()); ++i) {
-            edges[i].from->edges_from.push_back(&edges[i]);
-            edges[i].from->edges_from_by_day[edges[i].day].push_back(&edges[i]);
-        }
-
-        for (Airport& airport : airports) {	
-            for (vector<const Edge*>& airport_edges : airport.edges_from_by_day) {	
-                stable_sort(airport_edges.begin(), airport_edges.end(), [](const Edge* a, const Edge* b) {	
-                    return a->cost < b->cost;	
-                });
-            }	
-        }
+       
     }
 
     bool ready_to_stop() {
@@ -278,7 +291,7 @@ struct Solution {
 
     void print() {
         if(!correct){
-            cout << -1 << endl;
+            cout << 0 << endl;
         }
         cout << total_score << endl;
         for(int i = 0; i < static_cast<int>(sequence.size()); ++i) {
