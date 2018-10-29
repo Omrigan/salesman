@@ -1,4 +1,26 @@
-4
+5
+greedy_local_search_3opt 20
+1.in 1396
+2.in 9367
+3.in 74961
+4.in 199237
+eucledian_fair_salesman_large.in -1
+eucledian_large.in -1
+eucledian_not_regular_only_large.in -1
+eucledian_regular_large.in -1
+fair_salesman_p50_large.in 222009
+fair_salesman_p50_medium.in 120708
+fair_salesman_p70_large.in 200632
+fair_salesman_p70_medium.in 99680
+not_regular_only_p20_large.in 796619
+not_regular_only_p20_medium.in 313452
+not_regular_only_p40_large.in 513878
+not_regular_only_p40_medium.in 14126
+not_regular_only_p80_large.in -1
+not_regular_only_p80_medium.in 9295
+regular_large.in 527580
+whirl_large.in 1.32551e+06
+
 greedy_local_search_anneal 20
 1.in 1396
 2.in 4089

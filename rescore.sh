@@ -1,0 +1,3 @@
+./score greedy_local_search_3opt
+./score new_max_edge_index_stochastic
+./score new_max_edge_index_stochastic_3opt
