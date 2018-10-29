@@ -250,7 +250,7 @@ Solution solve_local_search(Assignment* task, Solution sol) {
 }
 
 vector<int> generate_k(int n, int k) {
-    assert(n >= 2 * k);
+    if (n <= 2 * k) return {};
     
     int module = n - k;
     set<int> distinct_indices;
@@ -346,6 +346,7 @@ ChainSwapper swap_chains_step(const Assignment* task, const Solution& sol, vecto
 }
 
 Solution swap_chains(Assignment* task, Solution sol, vector<int> edges_indices) {
+    if (edges_indices.empty()) return sol;
     ChainSwapper chain_swapper = swap_chains_step(task, sol, move(edges_indices));
 
     if (chain_swapper.delta_cost <= 0 or swap_anyway(task, chain_swapper.total_cost, chain_swapper.delta_cost)) {
