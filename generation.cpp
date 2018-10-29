@@ -100,7 +100,10 @@ namespace gen {
         struct RegionName rn;
         vector<string> specific;
         void init() {
-            if (sz_type == "small") {
+            if (sz_type == "very_small") {
+                N = random(3, 5);
+                NA = random(N, 10);
+            } else if (sz_type == "small") {
                 N = random(3, 11);
                 NA = random(N, 50);
             } else if (sz_type == "medium") {
@@ -345,10 +348,36 @@ namespace gen {
 void simple_generate() {
     // ---------------
     // regular
+    // very small
     {
-    gen::Params param_regular("large", 40, {"regular"});
-    param_regular.init();
-    gen::gen_simple(&param_regular);
+        gen::Params param_regular("very_small", 40, {"regular"});
+        param_regular.init();
+        gen::gen_simple(&param_regular);
+    }
+    // ---------------
+    // not regular
+    {
+        gen::Params param_without_regular("very_small", 20, {"not_regular_only",  "p20"});
+        param_without_regular.init();
+        gen::gen_simple(&param_without_regular);
+    }
+    {
+        gen::Params param_fair_salesman("very_small", 50, {"fair_salesman",  "p50"});
+        param_fair_salesman.init();
+        gen::gen_simple(&param_fair_salesman);
+    }
+    {
+        gen::Params param_eucledean("very_small", 30, {"eucledian"});
+        param_eucledean.init();
+        gen::gen_eucledian(&param_eucledean);
+    }
+
+    // ----------------------------------5-5-5-5-5-5--5-5-5-5-5------5-5-5-5--5
+
+    {
+        gen::Params param_regular("large", 40, {"regular"});
+        param_regular.init();
+        gen::gen_simple(&param_regular);
     }
     // ---------------
     // not regular
