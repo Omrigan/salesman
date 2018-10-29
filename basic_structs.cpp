@@ -214,7 +214,6 @@ struct Assignment {
                         if(ptr==nullptr){
                             edges.push_back({&airports[from_idx], &airports[to_idx], newday, cost});
                             ptr = &edges[edges.size()-1];
-                            cerr << from_idx << to_idx << endl;
                         }
                         canfromto[newday][from_idx][to_idx] = ptr;
                     }
@@ -248,6 +247,9 @@ struct Assignment {
                 });
             }	
         }
+        for(auto e : edges){
+            cerr << e.from->idx << e.to->idx << endl;
+        } 
     
         long long current_time = get_time_in_ms(Clock::now());
 
