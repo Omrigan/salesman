@@ -119,6 +119,7 @@ struct Assignment {
     bool use_random_swaps = false;
     // modify this!
     int margin = 5;
+    bool use_experimental_temp = false;
     // the bigger this value is, the longer local optimizations run
     double greedy_solution_runtime = 2;
 
@@ -131,14 +132,14 @@ struct Assignment {
 
         if (N <= 20) { 
             kind = 1;
-            time_to_live = 2700;
+            time_to_live = 2900;
             
         } else if (N <= 100) {
             kind = 2;
-            time_to_live = 4700;
+            time_to_live = 4900;
         } else {
             kind = 3;
-            time_to_live = 14000;
+            time_to_live = 14900;
         }
         finish_time = start_time + std::chrono::milliseconds(time_to_live);
 

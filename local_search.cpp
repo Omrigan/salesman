@@ -25,10 +25,18 @@ double get_temp(const Assignment* task) {
     return 1 - time_elapsed;
 }
 
+
 bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
     if (task->use_random_swaps) {
         double temp = get_temp(task);
-        return temp * (total_cost / (10000 * static_cast<double>(delta_cost))) > RandomGenerator::get_rand_prob();
+        double prob;
+        if(task->use_experimental_temp){
+            prob =  temp * (total_cost / (10000 * static_cast<double>(delta_cost))); 
+        } else{
+            prob =  exp((double(delta_cost))/total_cost/temp);
+        }
+        cerr << "Prob: " << prob << endl;
+        return prob > RandomGenerator::get_rand_prob();
     }
     return false;
 }
