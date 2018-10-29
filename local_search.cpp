@@ -38,7 +38,7 @@ bool swap_anyway(const Assignment* task, int total_cost, int delta_cost) {
             // prob =  exp(1/( (double) -delta_cost) * temp));
 
         }
-        cerr << "Prob: " << prob << endl;
+        // cerr << "Prob: " << prob << endl;
         return prob > RandomGenerator::get_rand_prob();
     }
     return false;

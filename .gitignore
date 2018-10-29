@@ -9,3 +9,5 @@ gen
 *.bin
 generation
 tests/
+cmake-build-debug
+.idea

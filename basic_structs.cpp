@@ -108,7 +108,7 @@ struct Assignment {
     int N;
     Airport* start;
     vector<Airport> airports;
-    vector<Edge> edges; 
+    vector<Edge> edges;
     unordered_map<string, int> airport_name_to_idx;
 
     vector<string> idx_to_airport;
