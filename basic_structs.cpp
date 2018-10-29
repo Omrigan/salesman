@@ -197,13 +197,13 @@ struct Assignment {
 
         canfromto.resize(MAX_TIME + 1, std::vector<std::vector<Edge* > > (MAX_AIRPORT, std::vector<Edge* > (MAX_AIRPORT, nullptr)));
 
-        while(!cin.eof()) {
             string from, to;
             int day, cost;
-            cin >> from >> to >> day >> cost;
+        while( cin >> from >> to >> day >> cost) {
+            // cin >> from >> to >> day >> cost;
             int from_idx = airports[airport_name_to_idx[from]].idx; 
 
-            int to_idx = airports[airport_name_to_idx[from]].idx;
+            int to_idx = airports[airport_name_to_idx[to]].idx;
 
             Edge* ptr = nullptr;
            
@@ -214,6 +214,7 @@ struct Assignment {
                         if(ptr==nullptr){
                             edges.push_back({&airports[from_idx], &airports[to_idx], newday, cost});
                             ptr = &edges[edges.size()-1];
+                            cerr << from_idx << to_idx << endl;
                         }
                         canfromto[newday][from_idx][to_idx] = ptr;
                     }
@@ -223,6 +224,7 @@ struct Assignment {
                 if(ptr==nullptr){
                     edges.push_back({&airports[from_idx], &airports[to_idx], day, cost});
                     ptr = &edges[edges.size()-1];
+                     cerr << from_idx << to_idx << endl;
                 }
                 canfromto[day][from_idx][to_idx] = ptr;
             }
@@ -230,12 +232,14 @@ struct Assignment {
                 ptr->from->edges_from.push_back(ptr);
                 ptr->from->edges_from_by_day[ptr->day].push_back(ptr);   
             }
+
         
 
             if ((get_time_in_ms(Clock::now()) - start_time_long) * 3 > finish_time_long - start_time_long) {
                 break;
             }
         }
+        cerr << "EDGES CNT " <<  edges.size() << endl;
 
         for (Airport& airport : airports) {	
             for (vector<const Edge*>& airport_edges : airport.edges_from_by_day) {	
