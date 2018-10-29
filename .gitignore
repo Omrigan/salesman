@@ -7,4 +7,7 @@ test.out
 score
 gen
 *.bin
-tests
+generation
+tests/fair_salesman_p70_large.in
+tests/not_regular_only_p40_large.in
+tests/not_regular_only_p80_large.in
