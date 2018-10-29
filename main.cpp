@@ -1,6 +1,6 @@
 
 #include "newmain.cpp" //nosubmit
-asdasd
+
 int main() {
    read_and_solve([](Assignment* task){
         Solution sol = run_main(solve_simple, task, true);
