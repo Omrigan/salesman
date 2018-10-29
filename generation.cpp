@@ -23,7 +23,7 @@ namespace gen {
     int random(int a, int b) {
         if (b <= a)
             cerr << "INVALID ARGUMENT\n";
-        return RandomGenerator::gen_rand_int() % (b - a) + a;
+        return RandomGenerator::get_rand_int() % (b - a) + a;
     }
 
     struct AirportName {
@@ -79,6 +79,13 @@ namespace gen {
     };
 
     struct Params {
+        Params(string sz_type_, int prob_, vector<string> specific_)
+            : sz_type(sz_type_)
+            , prob(prob_)
+            , specific(specific_)
+        {
+        }
+
         int N = 300; // number of areas;
         int NA = 300; // number of airports;
         string sz_type; // small - 0; medium - 1; large - 2;
@@ -339,64 +346,64 @@ void simple_generate() {
     // ---------------
     // regular
     {
-    gen::Params param_regular { .sz_type = "large", .prob = 40, .specific={"regular"} };
+    gen::Params param_regular("large", 40, {"regular"});
     param_regular.init();
     gen::gen_simple(&param_regular);
     }
     // ---------------
     // not regular
     {
-        gen::Params param_without_regular{.sz_type = "large", .prob = 20, .specific={"not_regular_only",  "p20"}};
+        gen::Params param_without_regular("large", 20, {"not_regular_only",  "p20"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     {
-        gen::Params param_without_regular{.sz_type = "large", .prob = 40, .specific={"not_regular_only",  "p40"}};
+        gen::Params param_without_regular("large", 40, {"not_regular_only",  "p40"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     {
-        gen::Params param_without_regular{.sz_type = "large", .prob = 80, .specific={"not_regular_only",  "p80"}};
+        gen::Params param_without_regular("large", 80, {"not_regular_only",  "p80"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     // ---------------
     // честный коммивояжер
     {
-        gen::Params param_fair_salesman{.sz_type = "large", .prob = 50, .specific={"fair_salesman",  "p50"}};
+        gen::Params param_fair_salesman("large", 50, {"fair_salesman",  "p50"});
         param_fair_salesman.init();
         gen::gen_simple(&param_fair_salesman);
     }
     {
-        gen::Params param_fair_salesman{.sz_type = "large", .prob = 70, .specific={"fair_salesman", "p70"}};
+        gen::Params param_fair_salesman("large", 70, {"fair_salesman", "p70"});
         param_fair_salesman.init();
         gen::gen_simple(&param_fair_salesman);
     }
 
     {
-        gen::Params param_without_regular{.sz_type = "medium", .prob = 20, .specific={"not_regular_only",  "p20"}};
+        gen::Params param_without_regular("medium", 20, {"not_regular_only",  "p20"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     {
-        gen::Params param_without_regular{.sz_type = "medium", .prob = 40, .specific={"not_regular_only",  "p40"}};
+        gen::Params param_without_regular("medium", 40, {"not_regular_only",  "p40"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     {
-        gen::Params param_without_regular{.sz_type = "medium", .prob = 80, .specific={"not_regular_only",  "p80"}};
+        gen::Params param_without_regular("medium", 80, {"not_regular_only",  "p80"});
         param_without_regular.init();
         gen::gen_simple(&param_without_regular);
     }
     // ---------------
     // честный коммивояжер
     {
-        gen::Params param_fair_salesman{.sz_type = "medium", .prob = 50, .specific={"fair_salesman",  "p50"}};
+        gen::Params param_fair_salesman("medium", 50, {"fair_salesman",  "p50"});
         param_fair_salesman.init();
         gen::gen_simple(&param_fair_salesman);
     }
     {
-        gen::Params param_fair_salesman{.sz_type = "medium", .prob = 70, .specific={"fair_salesman", "p70"}};
+        gen::Params param_fair_salesman("medium", 70, {"fair_salesman", "p70"});
         param_fair_salesman.init();
         gen::gen_simple(&param_fair_salesman);
     }
@@ -407,23 +414,23 @@ void simple_generate() {
     // gen::gen_cicle(&param_one_cicle);
     // ---------------
     // колесо
-    gen::Params param_whirl { .sz_type = "large", .specific={"whirl"} };
+    gen::Params param_whirl("large", 30, {"whirl"});
     param_whirl.init();
     gen::gen_whirl(&param_whirl);
     // eucledian
-    gen::Params param_eucledean { .sz_type = "large", .specific={"eucledian"} };
+    gen::Params param_eucledean("large", 30, {"eucledian"});
     param_eucledean.init();
     gen::gen_eucledian(&param_eucledean);
     // eucledian2
-    gen::Params param_eucledean1 { .sz_type = "large", .specific={"eucledian", "not_regular_only"} };
+    gen::Params param_eucledean1("large", 30, {"eucledian", "not_regular_only"});
     param_eucledean1.init();
     gen::gen_eucledian(&param_eucledean1);
     // eucledian3
-    gen::Params param_eucledean3 { .sz_type = "large", .specific={"eucledian", "regular"} };
+    gen::Params param_eucledean3("large", 30, {"eucledian", "regular"});
     param_eucledean3.init();
     gen::gen_eucledian(&param_eucledean3);
     // eucledian3
-    gen::Params param_eucledean4 { .sz_type = "large", .specific={"eucledian", "fair_salesman"} };
+    gen::Params param_eucledean4("large", 30, {"eucledian", "fair_salesman"});
     param_eucledean4.init();
     gen::gen_eucledian(&param_eucledean4);
 
