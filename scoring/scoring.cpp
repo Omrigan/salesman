@@ -34,6 +34,7 @@ void read_directory(const std::string& name)
     while(!f.eof()){
         string test;
         f >> test;
+        cerr << test << '\n';
         if(test.size()>=2){
             tests.push_back(test);
         }
@@ -84,6 +85,7 @@ void score(statistics* stats, string name){
     // }
     
     for(auto& test_name : tests){
+        cerr << "TEST NAME " << test_name << '\n';
         string cmd = "cat " + test_folder + "/" + test_name + " | ./" + name + ".bin > test.out";
         if(system(cmd.c_str())!=0){
             cerr << "your solution failed. Your scores so far:" << endl;
@@ -162,6 +164,7 @@ int main(int argc, char* argv[]) {
     }
     
     string run_name = argv[1];
+    cerr << "Solution " << run_name << '\n';
     if(run_name!="skip"){
         string cmd = "./build.sh solutions/" + run_name + ".cpp " + run_name + ".bin";
 
@@ -189,8 +192,9 @@ int main(int argc, char* argv[]) {
     // system("git add .");
     
     // system(("git commit -m \"" + run_name + " scored\" ").c_str());
-	
+    
 
     // system("git push");
     return 0;
 }
+
