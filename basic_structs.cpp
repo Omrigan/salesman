@@ -58,6 +58,7 @@ struct Edge {
     Airport* from;
     Airport* to;
     int day, cost;
+    mutable int number_visited = 0;
 
     bool operator < (const Edge& other) const {
         return cost < other.cost;

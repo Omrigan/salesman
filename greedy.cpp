@@ -17,6 +17,7 @@ struct GreedyManager {
 
     void make_step(const Edge* next_edge, vector<const Edge*>* solution_edges = nullptr) {
         if (solution_edges != nullptr) solution_edges->push_back(next_edge);
+        ++next_edge->number_visited;
         visited[next_edge->to->zone] = true;
         airport = next_edge->to;
         ++day;
@@ -107,6 +108,18 @@ struct SuitableEdgesIterator {
         return res;
     }
 
+    const Edge* get_least_visited(const vector<bool>& visited) {
+        const Edge* cur_best = nullptr;
+        int times_visited = -1;
+        const Edge* tmp_edge = nullptr;
+        while ((tmp_edge = get_next_suitable_edge(visited)) != nullptr) {
+            if (!cur_best or (times_visited < cur_best->number_visited)) {
+                cur_best = tmp_edge;
+            }
+        }
+        return cur_best;
+    }
+
     const vector<const Edge*>* edges_zero;
     const vector<const Edge*>* edges_day;
     int ind_zero;
@@ -181,6 +194,12 @@ const Edge* get_next_edge_weighted(GreedyManager* mngr) {
     return get_random_edge_weighted(mngr, suitable_edges);
 }
 
+const Edge* get_least_visited_edge(GreedyManager *mngr) {
+    SuitableEdgesIterator it(mngr->airport->edges_from_by_day[0], mngr->airport->edges_from_by_day[mngr->day]);
+    const Edge* least_visited_edge = it.get_least_visited(mngr->visited);
+    return least_visited_edge; 
+}
+
 // return empty vector iff no path found
 vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
     vector<const Edge*> path_edges;
@@ -190,6 +209,7 @@ vector<const Edge*> get_greedy_path(GreedyManager* mngr) {
         }
 
         Edge const* next_edge;
+        // we can try 'get_least_visited_edge' here
         if (RandomGenerator::get_rand_int() % 2) {
             next_edge = get_next_edge_random(mngr); 
         } else {
